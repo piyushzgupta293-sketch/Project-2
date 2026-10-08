@@ -6,7 +6,7 @@
 <title>Project-2 — PTC Ads</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.ptc-list{display:grid;gap:14px;margin-top:20px}.ad-card{border:1px solid #ddd;border-radius:10px;padding:16px}.ad-card h2{font-size:18px;margin:0 0 8px}.ad-card p{margin:6px 0;color:#666;font-size:14px}.ad-meta{display:flex;justify-content:space-between;gap:10px;margin:12px 0;font-size:14px}.ad-button{width:100%;padding:11px;border:0;border-radius:7px;background:#111;color:#fff;font-weight:600;cursor:pointer}.ad-button:disabled{opacity:.5;cursor:not-allowed}.timer{font-weight:700;text-align:center;margin:12px 0;min-height:20px}.back{display:inline-block;margin-bottom:18px;color:#111;font-weight:600;text-decoration:none}
+.ptc-list{display:grid;gap:14px;margin-top:20px}.ad-card{border:1px solid #ddd;border-radius:10px;padding:16px}.ad-card h2{font-size:18px;margin:0 0 8px}.ad-card p{margin:6px 0;color:#666;font-size:14px}.ad-meta{display:flex;justify-content:space-between;gap:10px;margin:12px 0;font-size:14px}.ad-button{width:100%;padding:11px;border:0;border-radius:7px;background:#111;color:#fff;font-weight:600;cursor:pointer}.ad-button:disabled{opacity:.5;cursor:not-allowed}.timer{font-weight:700;text-align:center;margin:12px 0;min-height:20px}.cooldown{font-weight:600;text-align:center;margin:12px 0;min-height:20px;color:#666}.back{display:inline-block;margin-bottom:18px;color:#111;font-weight:600;text-decoration:none}
 </style>
 </head>
 <body>
@@ -20,41 +20,80 @@
 const adsContainer=document.getElementById("ads"),message=document.getElementById("message");
 const activeTimers={};
 async function getSession(){const {data,error}=await supabaseClient.auth.getSession();if(error||!data.session){window.location.href="index.html";return null;}return data.session;}
-async function loadAds(){const session=await getSession();if(!session)return;const {data:ads,error}=await supabaseClient.from("ptc_ads").select("id,title,description,url,reward,duration_seconds").eq("active",true).order("id",{ascending:true});if(error){message.textContent="Could not load advertisements.";message.style.color="#b00020";return;}if(!ads||ads.length===0){message.textContent="No advertisements available right now.";return;}adsContainer.innerHTML=ads.map((ad,index)=>`<article class="ad-card"><h2>${index+1}. ${escapeHtml(ad.title)}</h2><p>${escapeHtml(ad.description||"")}</p><div class="ad-meta"><span>Reward: <strong>${ad.reward}</strong></span><span>Time: <strong>${ad.duration_seconds}s</strong></span></div><div class="timer" id="timer-${ad.id}">Ready</div><button class="ad-button" id="button-${ad.id}" onclick="startAd(${ad.id})">View Ad</button></article>`).join("");window.ptcAds=ads;}
+
+async function loadAds(){
+  const session=await getSession();if(!session)return;
+  const {data:ads,error}=await supabaseClient.from("ptc_ads").select("id,title,description,url,reward,duration_seconds,cooldown_hours").eq("active",true).order("id",{ascending:true});
+  if(error){message.textContent="Could not load advertisements.";message.style.color="#b00020";return;}
+  if(!ads||ads.length===0){message.textContent="No advertisements available right now.";return;}
+  window.ptcAds=ads;
+  const {data:views}=await supabaseClient.from("ptc_views").select("ad_id,claimed_at").eq("user_id",session.user.id).not("claimed_at","is",null).order("claimed_at",{ascending:false});
+  const lastClaim={};
+  (views||[]).forEach(v=>{if(lastClaim[v.ad_id]===undefined)lastClaim[v.ad_id]=new Date(v.claimed_at);});
+  adsContainer.innerHTML=ads.map((ad,index)=>{
+    const last=lastClaim[ad.id];
+    const cooldownMs=Number(ad.cooldown_hours||24)*60*60*1000;
+    const available=!last||Date.now()-last.getTime()>=cooldownMs;
+    const initialTimer=available?"Ready":"Available again soon";
+    const buttonText=available?"View Ad":"Locked";
+    return `<article class="ad-card" id="card-${ad.id}"><h2>${index+1}. ${escapeHtml(ad.title)}</h2><p>${escapeHtml(ad.description||"")}</p><div class="ad-meta"><span>Reward: <strong>${ad.reward}</strong></span><span>Time: <strong>${ad.duration_seconds}s</strong></span></div><div class="timer" id="timer-${ad.id}">${initialTimer}</div><div class="cooldown" id="cooldown-${ad.id}">${available?"":"Already viewed — calculating availability..."}</div><button class="ad-button" id="button-${ad.id}" ${available?"":"disabled"} onclick="startAd(${ad.id})">${buttonText}</button></article>`;
+  }).join("");
+  ads.forEach(ad=>{if(lastClaim[ad.id])startCooldownClock(ad,lastClaim[ad.id]);});
+}
+
+function startCooldownClock(ad,lastClaim){
+  const cooldownMs=Number(ad.cooldown_hours||24)*60*60*1000;
+  const cooldown=document.getElementById("cooldown-"+ad.id),button=document.getElementById("button-"+ad.id),timer=document.getElementById("timer-"+ad.id);
+  function update(){
+    const remaining=cooldownMs-(Date.now()-lastClaim.getTime());
+    if(remaining<=0){
+      cooldown.textContent="Available again";
+      timer.textContent="Ready";
+      button.disabled=false;
+      button.textContent="View Ad";
+      return;
+    }
+    const totalSeconds=Math.ceil(remaining/1000);
+    const hours=Math.floor(totalSeconds/3600);
+    const minutes=Math.floor((totalSeconds%3600)/60);
+    const seconds=totalSeconds%60;
+    cooldown.textContent="Already viewed — available again in "+hours+"h "+String(minutes).padStart(2,"0")+"m "+String(seconds).padStart(2,"0")+"s";
+  }
+  update();
+  const interval=setInterval(()=>{update();if(cooldown.textContent==="Available again")clearInterval(interval);},1000);
+}
+
 function escapeHtml(value){return String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+
 async function startAd(id){
   const ad=window.ptcAds.find(item=>item.id===id);if(!ad)return;
   const session=await getSession();if(!session)return;
   const button=document.getElementById("button-"+id),timer=document.getElementById("timer-"+id);
   button.disabled=true;button.textContent="Starting...";
   const {data:duration,error}=await supabaseClient.rpc("start_ptc_ad",{p_ad_id:id});
-  if(error){button.disabled=false;button.textContent="View Ad";message.textContent="Could not start the advertisement. "+error.message;message.style.color="#b00020";return;}
+  if(error){
+    button.disabled=false;button.textContent="View Ad";
+    message.textContent=error.message||"Could not start the advertisement.";
+    message.style.color="#b00020";
+    if((error.message||"").toLowerCase().includes("already viewed"))loadAds();
+    return;
+  }
   window.open(ad.url,"_blank","noopener,noreferrer");
   const seconds=Number(duration||ad.duration_seconds);
   const state={interval:null,startedAt:Date.now(),durationMs:seconds*1000,completed:false};
   activeTimers[id]=state;
   function updateTimer(){
-    const elapsed=Date.now()-state.startedAt;
-    const left=Math.max(0,state.durationMs-elapsed);
-    const remaining=Math.ceil(left/1000);
+    const elapsed=Date.now()-state.startedAt,left=Math.max(0,state.durationMs-elapsed),remaining=Math.ceil(left/1000);
     if(left<=0){
-      clearInterval(state.interval);
-      state.completed=true;
-      timer.textContent="Viewing complete";
-      button.disabled=false;
-      button.textContent="Claim Reward";
-      button.onclick=()=>claimReward(id);
-    }else{
-      timer.textContent=remaining+" seconds remaining";
-    }
+      clearInterval(state.interval);state.completed=true;timer.textContent="Viewing complete";button.disabled=false;button.textContent="Claim Reward";button.onclick=()=>claimReward(id);
+    }else timer.textContent=remaining+" seconds remaining";
   }
-  updateTimer();
-  state.interval=setInterval(updateTimer,250);
+  updateTimer();state.interval=setInterval(updateTimer,250);
 }
+
 async function resetEarlyAd(id){
   const state=activeTimers[id];if(!state||state.completed)return;
-  clearInterval(state.interval);
-  delete activeTimers[id];
+  clearInterval(state.interval);delete activeTimers[id];
   await supabaseClient.rpc("cancel_ptc_ad",{p_ad_id:id});
   const button=document.getElementById("button-"+id),timer=document.getElementById("timer-"+id);
   if(button){button.disabled=false;button.textContent="View Ad";button.onclick=()=>startAd(id);}
@@ -62,19 +101,34 @@ async function resetEarlyAd(id){
   message.textContent="You returned before the viewing time was complete. Please open the ad again.";
   message.style.color="#b00020";
 }
+
 async function claimReward(id){
   const state=activeTimers[id];if(!state||!state.completed){message.textContent="Finish the timer before claiming.";message.style.color="#b00020";return;}
   const button=document.getElementById("button-"+id),timer=document.getElementById("timer-"+id);
   button.disabled=true;button.textContent="Claiming...";
   const {data,error}=await supabaseClient.rpc("claim_ptc_reward",{p_ad_id:id});
   if(error){button.disabled=false;button.textContent="Claim Reward";message.textContent=error.message||"Could not claim reward.";message.style.color="#b00020";return;}
-  delete activeTimers[id];
-  timer.textContent="Reward claimed successfully!";
-  button.textContent="+"+data+" earned";
-  message.textContent="Your reward was added to your balance.";
-  message.style.color="#111";
+  delete activeTimers[id];timer.textContent="Reward claimed successfully!";button.textContent="+"+data+" earned";
+  message.textContent="Your reward was added to your balance.";message.style.color="#111";
+  const ad=window.ptcAds.find(item=>item.id===id);
+  if(ad)startCooldownClock(ad,new Date());
 }
-document.addEventListener("visibilitychange",async()=>{if(!document.hidden){for(const id in activeTimers){const state=activeTimers[id];if(!state.completed){if(Date.now()-state.startedAt<state.durationMs){await resetEarlyAd(Number(id));}else{state.completed=true;clearInterval(state.interval);document.getElementById("timer-"+id).textContent="Viewing complete";const button=document.getElementById("button-"+id);button.disabled=false;button.textContent="Claim Reward";button.onclick=()=>claimReward(Number(id));}}}}});
+
+document.addEventListener("visibilitychange",async()=>{
+  if(!document.hidden){
+    for(const id in activeTimers){
+      const state=activeTimers[id];
+      if(!state.completed){
+        if(Date.now()-state.startedAt<state.durationMs)await resetEarlyAd(Number(id));
+        else{
+          state.completed=true;clearInterval(state.interval);
+          document.getElementById("timer-"+id).textContent="Viewing complete";
+          const button=document.getElementById("button-"+id);button.disabled=false;button.textContent="Claim Reward";button.onclick=()=>claimReward(Number(id));
+        }
+      }
+    }
+  }
+});
 loadAds();
 </script>
 </body>
