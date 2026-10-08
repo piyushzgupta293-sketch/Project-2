@@ -6,128 +6,27 @@
 <title>Project-2 — PTC Ads</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.ptc-list{display:grid;gap:14px;margin-top:20px}
-.ad-card{border:1px solid #ddd;border-radius:10px;padding:16px}
-.ad-card h2{font-size:18px;margin:0 0 8px}
-.ad-card p{margin:6px 0;color:#666;font-size:14px}
-.ad-meta{display:flex;justify-content:space-between;gap:10px;margin:12px 0;font-size:14px}
-.ad-button{width:100%;padding:11px;border:0;border-radius:7px;background:#111;color:#fff;font-weight:600;cursor:pointer}
-.ad-button:disabled{opacity:.5;cursor:not-allowed}
-.timer{font-weight:700;text-align:center;margin:12px 0;min-height:20px}
-.back{display:inline-block;margin-bottom:18px;color:#111;font-weight:600;text-decoration:none}
+.ptc-list{display:grid;gap:14px;margin-top:20px}.ad-card{border:1px solid #ddd;border-radius:10px;padding:16px}.ad-card h2{font-size:18px;margin:0 0 8px}.ad-card p{margin:6px 0;color:#666;font-size:14px}.ad-meta{display:flex;justify-content:space-between;gap:10px;margin:12px 0;font-size:14px}.ad-button{width:100%;padding:11px;border:0;border-radius:7px;background:#111;color:#fff;font-weight:600;cursor:pointer}.ad-button:disabled{opacity:.5;cursor:not-allowed}.timer{font-weight:700;text-align:center;margin:12px 0;min-height:20px}.back{display:inline-block;margin-bottom:18px;color:#111;font-weight:600;text-decoration:none}
 </style>
 </head>
 <body>
-<main class="auth-page">
-<section class="auth-card">
-<a class="back" href="dashboard.html">← Dashboard</a>
-<div class="brand">Project-2</div>
-<h1>PTC Ads</h1>
-<p class="subtitle">View advertisements and earn rewards.</p>
-
-<div id="ads" class="ptc-list"></div>
-<p class="message" id="message"></p>
-</section>
-</main>
-
+<main class="auth-page"><section class="auth-card">
+<a class="back" href="dashboard.html">← Dashboard</a><div class="brand">Project-2</div><h1>PTC Ads</h1><p class="subtitle">View advertisements and earn rewards.</p>
+<div id="ads" class="ptc-list"></div><p class="message" id="message"></p>
+</section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 <script>
 const adsContainer = document.getElementById("ads");
 const message = document.getElementById("message");
-
-async function loadAds() {
-  const { data: sessionData } = await supabaseClient.auth.getSession();
-
-  if (!sessionData.session) {
-    window.location.href = "index.html";
-    return;
-  }
-
-  const { data: ads, error } = await supabaseClient
-    .from("ptc_ads")
-    .select("id,title,description,url,reward,duration_seconds")
-    .eq("active", true)
-    .order("id", { ascending: true });
-
-  if (error) {
-    message.textContent = "Could not load advertisements.";
-    message.style.color = "#b00020";
-    return;
-  }
-
-  if (!ads || ads.length === 0) {
-    message.textContent = "No advertisements available right now.";
-    return;
-  }
-
-  adsContainer.innerHTML = ads.map((ad, index) => `
-    <article class="ad-card">
-      <h2>${index + 1}. ${escapeHtml(ad.title)}</h2>
-      <p>${escapeHtml(ad.description || "")}</p>
-      <div class="ad-meta">
-        <span>Reward: <strong>${ad.reward}</strong></span>
-        <span>Time: <strong>${ad.duration_seconds}s</strong></span>
-      </div>
-      <div class="timer" id="timer-${ad.id}">Ready</div>
-      <button class="ad-button" id="button-${ad.id}" onclick="startAd(${ad.id})">View Ad</button>
-    </article>
-  `).join("");
-
-  window.ptcAds = ads;
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function startAd(id) {
-  const ad = window.ptcAds.find(item => item.id === id);
-  if (!ad) return;
-
-  const button = document.getElementById("button-" + id);
-  const timer = document.getElementById("timer-" + id);
-
-  button.disabled = true;
-  button.textContent = "Advertisement opened";
-
-  window.open(ad.url, "_blank", "noopener,noreferrer");
-
-  let remaining = Number(ad.duration_seconds);
-  timer.textContent = remaining + " seconds remaining";
-
-  const interval = setInterval(() => {
-    remaining--;
-
-    if (remaining > 0) {
-      timer.textContent = remaining + " seconds remaining";
-    } else {
-      clearInterval(interval);
-      timer.textContent = "Viewing complete";
-      button.disabled = false;
-      button.textContent = "Claim Reward";
-      button.onclick = () => claimDemo(id);
-    }
-  }, 1000);
-}
-
-function claimDemo(id) {
-  const button = document.getElementById("button-" + id);
-  const timer = document.getElementById("timer-" + id);
-
-  button.disabled = true;
-  button.textContent = "Claimed (test only)";
-  timer.textContent = "Reward claim backend coming next.";
-
-  // No balance is changed here.
-  // Real rewards will be processed securely by the backend.
-}
-
+async function getSession(){const {data,error}=await supabaseClient.auth.getSession();if(error||!data.session){window.location.href="index.html";return null;}return data.session;}
+async function loadAds(){const session=await getSession();if(!session)return;const {data:ads,error}=await supabaseClient.from("ptc_ads").select("id,title,description,url,reward,duration_seconds").eq("active",true).order("id",{ascending:true});if(error){message.textContent="Could not load advertisements.";message.style.color="#b00020";return;}if(!ads||ads.length===0){message.textContent="No advertisements available right now.";return;}
+adsContainer.innerHTML=ads.map((ad,index)=>`<article class="ad-card"><h2>${index+1}. ${escapeHtml(ad.title)}</h2><p>${escapeHtml(ad.description||"")}</p><div class="ad-meta"><span>Reward: <strong>${ad.reward}</strong></span><span>Time: <strong>${ad.duration_seconds}s</strong></span></div><div class="timer" id="timer-${ad.id}">Ready</div><button class="ad-button" id="button-${ad.id}" onclick="startAd(${ad.id})">View Ad</button></article>`).join("");window.ptcAds=ads;}
+function escapeHtml(value){return String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+async function startAd(id){const ad=window.ptcAds.find(item=>item.id===id);if(!ad)return;const session=await getSession();if(!session)return;const button=document.getElementById("button-"+id);const timer=document.getElementById("timer-"+id);button.disabled=true;button.textContent="Starting...";
+const {error}=await supabaseClient.from("ptc_views").insert({user_id:session.user.id,ad_id:id,reward:ad.reward,started_at:new Date().toISOString()});if(error){button.disabled=false;button.textContent="View Ad";message.textContent="Could not start the advertisement. "+error.message;message.style.color="#b00020";return;}
+window.open(ad.url,"_blank","noopener,noreferrer");let remaining=Number(ad.duration_seconds);timer.textContent=remaining+" seconds remaining";const interval=setInterval(()=>{remaining--;if(remaining>0){timer.textContent=remaining+" seconds remaining";}else{clearInterval(interval);timer.textContent="Viewing complete";button.disabled=false;button.textContent="Claim Reward";button.onclick=()=>claimReward(id);}},1000);}
+async function claimReward(id){const button=document.getElementById("button-"+id);const timer=document.getElementById("timer-"+id);button.disabled=true;button.textContent="Claiming...";const {data,error}=await supabaseClient.rpc("claim_ptc_reward",{p_ad_id:id});if(error){button.disabled=false;button.textContent="Claim Reward";message.textContent=error.message||"Could not claim reward.";message.style.color="#b00020";return;}timer.textContent="Reward claimed successfully!";button.textContent="+"+data+" earned";message.textContent="Your reward was added to your balance.";message.style.color="#111";}
 loadAds();
 </script>
 </body>
