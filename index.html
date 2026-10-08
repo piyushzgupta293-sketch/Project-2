@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VirFaucet — Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="auth-page">
+  <section class="auth-card">
+    <div class="brand">VirFaucet</div>
+    <h1 id="formTitle">Welcome back</h1>
+    <p class="subtitle" id="formSubtitle">Login to your account</p>
+    <form id="authForm">
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="Enter your email" required>
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Enter your password" required>
+      <div id="confirmWrap" class="hidden">
+        <label for="confirmPassword">Confirm password</label>
+        <input id="confirmPassword" type="password" placeholder="Confirm your password">
+      </div>
+      <div class="turnstile-placeholder">Cloudflare Turnstile</div>
+      <button type="submit" id="submitButton">Login</button>
+      <p class="message" id="message"></p>
+    </form>
+    <p class="switch">
+      <span id="switchText">Don't have an account?</span>
+      <button type="button" class="text-button" id="switchButton">Register</button>
+    </p>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
