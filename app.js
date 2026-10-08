@@ -51,7 +51,7 @@ form.addEventListener("submit", async (event) => {
       if (error) throw error;
 
       if (data.session) {
-        showMessage("Account created. You are now logged in.");
+        window.location.href = "dashboard.html";
       } else {
         showMessage("Account created. You can now log in.");
         registerMode = false;
@@ -71,7 +71,7 @@ form.addEventListener("submit", async (event) => {
 
       if (error) throw error;
 
-      showMessage("Login successful.");
+      window.location.href = "dashboard.html";
     }
   } catch (error) {
     showMessage(error.message || "Something went wrong.", true);
