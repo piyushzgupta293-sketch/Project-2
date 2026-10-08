@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project-2 — Transactions</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.transaction-list{display:grid;gap:12px;margin-top:20px}
+.transaction-card{border:1px solid #ddd;border-radius:10px;padding:14px}
+.transaction-top{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.transaction-type{font-weight:700}
+.transaction-amount{font-weight:700}
+.transaction-amount.positive{color:#137333}
+.transaction-description{margin:8px 0 4px;color:#555;font-size:14px}
+.transaction-date{margin:0;color:#777;font-size:12px}
+.empty{margin-top:20px;padding:18px;border:1px dashed #ccc;border-radius:10px;text-align:center;color:#777}
+.back{display:inline-block;margin-bottom:18px;color:#111;font-weight:600;text-decoration:none}
+</style>
+</head>
+<body>
+<main class="auth-page">
+<section class="auth-card">
+<a class="back" href="dashboard.html">← Dashboard</a>
+<div class="brand">Project-2</div>
+<h1>Transactions</h1>
+<p class="subtitle">Your earning and account activity.</p>
+
+<div id="transactions" class="transaction-list"></div>
+<p class="message" id="message"></p>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+const container=document.getElementById("transactions");
+const message=document.getElementById("message");
+
+function escapeHtml(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function formatDate(value){
+  const date=new Date(value);
+  if(Number.isNaN(date.getTime())) return "Unknown date";
+  return date.toLocaleString();
+}
+
+async function loadTransactions(){
+  const {data:sessionData,error:sessionError}=await supabaseClient.auth.getSession();
+
+  if(sessionError || !sessionData.session){
+    window.location.href="index.html";
+    return;
+  }
+
+  const userId=sessionData.session.user.id;
+
+  const {data,error}=await supabaseClient
+    .from("transactions")
+    .select("id,type,amount,description,created_at")
+    .eq("user_id",userId)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    message.textContent="Could not load your transactions.";
+    message.style.color="#b00020";
+    return;
+  }
+
+  if(!data || data.length===0){
+    container.innerHTML='<div class="empty">No transactions yet.</div>';
+    return;
+  }
+
+  container.innerHTML=data.map(transaction=>{
+    const amount=Number(transaction.amount);
+    const amountText=(amount>=0?"+":"")+amount;
+
+    return `<article class="transaction-card">
+      <div class="transaction-top">
+        <span class="transaction-type">${escapeHtml(transaction.type)}</span>
+        <span class="transaction-amount ${amount>=0?"positive":""}">${escapeHtml(amountText)}</span>
+      </div>
+      <p class="transaction-description">${escapeHtml(transaction.description||"")}</p>
+      <p class="transaction-date">${escapeHtml(formatDate(transaction.created_at))}</p>
+    </article>`;
+  }).join("");
+}
+
+loadTransactions();
+</script>
+</body>
+</html>
