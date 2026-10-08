@@ -1,0 +1,17 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111}
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-card{width:100%;max-width:400px;border:1px solid #ddd;border-radius:12px;padding:32px;background:#fff}
+.brand{font-size:24px;font-weight:700;margin-bottom:36px}
+h1{font-size:28px;margin:0 0 8px}
+.subtitle{margin:0 0 28px;color:#666}
+label{display:block;font-size:14px;font-weight:600;margin:16px 0 7px}
+input{width:100%;padding:13px 14px;border:1px solid #ccc;border-radius:7px;background:#fff;color:#111;font-size:15px;outline:none}
+input:focus{border-color:#111}
+button[type=submit]{width:100%;margin-top:22px;padding:13px;border:0;border-radius:7px;background:#111;color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+button[type=submit]:hover{background:#222}
+.switch{text-align:center;margin:24px 0 0;color:#666;font-size:14px}
+.text-button{border:0;background:none;color:#111;font-weight:600;cursor:pointer;padding:0;margin-left:4px}
+.turnstile-placeholder{margin-top:20px;border:1px dashed #ccc;border-radius:7px;padding:14px;text-align:center;font-size:13px;color:#777}
+.hidden{display:none}
+.message{text-align:center;font-size:14px;min-height:18px;margin:14px 0 0}
