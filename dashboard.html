@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project-2 — Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="auth-page">
+  <section class="auth-card">
+    <div class="brand">Project-2</div>
+    <h1>Dashboard</h1>
+    <p class="subtitle">Welcome to your account</p>
+
+    <div>
+      <p><strong>Email</strong></p>
+      <p id="userEmail">Loading...</p>
+
+      <p><strong>Balance</strong></p>
+      <p>0</p>
+
+      <p><strong>Today's Earnings</strong></p>
+      <p>0</p>
+
+      <p><strong>Total Earnings</strong></p>
+      <p>0</p>
+
+      <hr>
+
+      <p><strong>PTC Ads</strong></p>
+      <p>Coming soon</p>
+
+      <p><strong>Withdrawals</strong></p>
+      <p>Coming soon</p>
+
+      <p><strong>Transactions</strong></p>
+      <p>Coming soon</p>
+
+      <button type="button" id="logoutButton">Logout</button>
+      <p class="message" id="message"></p>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+const userEmail = document.getElementById("userEmail");
+const logoutButton = document.getElementById("logoutButton");
+const message = document.getElementById("message");
+
+async function loadDashboard() {
+  const { data, error } = await supabaseClient.auth.getSession();
+
+  if (error || !data.session) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  userEmail.textContent = data.session.user.email || "User";
+}
+
+logoutButton.addEventListener("click", async () => {
+  logoutButton.disabled = true;
+  logoutButton.textContent = "Logging out...";
+
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    message.textContent = error.message;
+    logoutButton.disabled = false;
+    logoutButton.textContent = "Logout";
+    return;
+  }
+
+  window.location.href = "index.html";
+});
+
+loadDashboard();
+</script>
+</body>
+</html>
