@@ -3,34 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VirFaucet — Login</title>
+<title>Project-2 — Login</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main class="auth-page">
   <section class="auth-card">
-    <div class="brand">VirFaucet</div>
+    <div class="brand">Project-2</div>
     <h1 id="formTitle">Welcome back</h1>
     <p class="subtitle" id="formSubtitle">Login to your account</p>
+
     <form id="authForm">
       <label for="email">Email</label>
-      <input id="email" type="email" placeholder="Enter your email" required>
+      <input id="email" type="email" placeholder="Enter your email" autocomplete="email" required>
+
       <label for="password">Password</label>
-      <input id="password" type="password" placeholder="Enter your password" required>
+      <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required>
+
       <div id="confirmWrap" class="hidden">
         <label for="confirmPassword">Confirm password</label>
-        <input id="confirmPassword" type="password" placeholder="Confirm your password">
+        <input id="confirmPassword" type="password" placeholder="Confirm your password" autocomplete="new-password">
       </div>
-      <div class="turnstile-placeholder">Cloudflare Turnstile</div>
+
+      <div class="turnstile-placeholder">Cloudflare Turnstile — coming next</div>
+
       <button type="submit" id="submitButton">Login</button>
       <p class="message" id="message"></p>
     </form>
+
     <p class="switch">
       <span id="switchText">Don't have an account?</span>
       <button type="button" class="text-button" id="switchButton">Register</button>
     </p>
   </section>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
