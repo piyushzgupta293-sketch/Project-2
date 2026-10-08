@@ -18,13 +18,13 @@
       <p id="userEmail">Loading...</p>
 
       <p><strong>Balance</strong></p>
-      <p>0</p>
+      <p id="balance">Loading...</p>
 
       <p><strong>Today's Earnings</strong></p>
-      <p>0</p>
+      <p id="todayEarnings">Loading...</p>
 
       <p><strong>Total Earnings</strong></p>
-      <p>0</p>
+      <p id="totalEarnings">Loading...</p>
 
       <hr>
 
@@ -47,18 +47,41 @@
 <script src="supabase.js"></script>
 <script>
 const userEmail = document.getElementById("userEmail");
+const balance = document.getElementById("balance");
+const todayEarnings = document.getElementById("todayEarnings");
+const totalEarnings = document.getElementById("totalEarnings");
 const logoutButton = document.getElementById("logoutButton");
 const message = document.getElementById("message");
 
 async function loadDashboard() {
-  const { data, error } = await supabaseClient.auth.getSession();
+  const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
 
-  if (error || !data.session) {
+  if (sessionError || !sessionData.session) {
     window.location.href = "index.html";
     return;
   }
 
-  userEmail.textContent = data.session.user.email || "User";
+  const user = sessionData.session.user;
+  userEmail.textContent = user.email || "User";
+
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("balance, today_earnings, total_earnings")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    message.textContent = "Could not load your balance.";
+    message.style.color = "#b00020";
+    balance.textContent = "—";
+    todayEarnings.textContent = "—";
+    totalEarnings.textContent = "—";
+    return;
+  }
+
+  balance.textContent = profile.balance ?? 0;
+  todayEarnings.textContent = profile.today_earnings ?? 0;
+  totalEarnings.textContent = profile.total_earnings ?? 0;
 }
 
 logoutButton.addEventListener("click", async () => {
@@ -69,6 +92,7 @@ logoutButton.addEventListener("click", async () => {
 
   if (error) {
     message.textContent = error.message;
+    message.style.color = "#b00020";
     logoutButton.disabled = false;
     logoutButton.textContent = "Logout";
     return;
