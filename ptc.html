@@ -6,7 +6,7 @@
 <title>Project-2 — PTC Ads</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.ptc-list{display:grid;gap:14px;margin-top:20px}.ad-card{border:1px solid #ddd;border-radius:10px;padding:16px}.ad-card h2{font-size:18px;margin:0 0 8px}.ad-card p{margin:6px 0;color:#666;font-size:14px}.ad-meta{display:flex;justify-content:space-between;gap:10px;margin:12px 0;font-size:14px}.ad-button{width:100%;padding:11px;border:0;border-radius:7px;background:#111;color:#fff;font-weight:600;cursor:pointer}.ad-button:disabled{opacity:.5;cursor:not-allowed}.timer{font-weight:700;text-align:center;margin:12px 0;min-height:20px}.cooldown{font-weight:600;text-align:center;margin:12px 0;min-height:20px;color:#666}.back{display:inline-block;margin-bottom:18px;color:#111;font-weight:600;text-decoration:none}
+.ptc-list{display:grid;gap:14px;margin-top:20px}.ad-card{border:1px solid #ddd;border-radius:10px;padding:16px}.ad-card h2{font-size:18px;margin:0 0 8px}.ad-card p{margin:6px 0;color:#666;font-size:14px}.ad-meta{display:flex;justify-content:space-between;gap:10px;margin:12px 0;font-size:14px}.ad-button{width:100%;padding:11px;border:0;border-radius:7px;background:#111;color:#fff;font-weight:600;cursor:pointer}.ad-button:disabled{background:#e2e2e2;color:#777;opacity:1;cursor:not-allowed}.ad-button.watched{background:#e2e2e2;color:#777;border:1px solid #ccc}.timer{font-weight:700;text-align:center;margin:12px 0;min-height:20px}.cooldown{font-weight:600;text-align:center;margin:12px 0;min-height:20px;color:#666}.back{display:inline-block;margin-bottom:18px;color:#111;font-weight:600;text-decoration:none}
 </style>
 </head>
 <body>
@@ -34,9 +34,9 @@ async function loadAds(){
     const last=lastClaim[ad.id];
     const cooldownMs=Number(ad.cooldown_hours||24)*60*60*1000;
     const available=!last||Date.now()-last.getTime()>=cooldownMs;
-    const initialTimer=available?"Ready":"Available again soon";
-    const buttonText=available?"View Ad":"Locked";
-    return `<article class="ad-card" id="card-${ad.id}"><h2>${index+1}. ${escapeHtml(ad.title)}</h2><p>${escapeHtml(ad.description||"")}</p><div class="ad-meta"><span>Reward: <strong>${ad.reward}</strong></span><span>Time: <strong>${ad.duration_seconds}s</strong></span></div><div class="timer" id="timer-${ad.id}">${initialTimer}</div><div class="cooldown" id="cooldown-${ad.id}">${available?"":"Already viewed — calculating availability..."}</div><button class="ad-button" id="button-${ad.id}" ${available?"":"disabled"} onclick="startAd(${ad.id})">${buttonText}</button></article>`;
+    const initialTimer=available?"Ready":"Already watched";
+    const buttonText=available?"View Ad":"✓ Watched";
+    return `<article class="ad-card" id="card-${ad.id}"><h2>${index+1}. ${escapeHtml(ad.title)}</h2><p>${escapeHtml(ad.description||"")}</p><div class="ad-meta"><span>Reward: <strong>${ad.reward}</strong></span><span>Time: <strong>${ad.duration_seconds}s</strong></span></div><div class="timer" id="timer-${ad.id}">${initialTimer}</div><div class="cooldown" id="cooldown-${ad.id}">${available?"":"✓ Already watched — available again soon..."}</div><button class="ad-button ${available?"":"watched"}" id="button-${ad.id}" ${available?"":"disabled"} onclick="startAd(${ad.id})">${buttonText}</button></article>`;
   }).join("");
   ads.forEach(ad=>{if(lastClaim[ad.id])startCooldownClock(ad,lastClaim[ad.id]);});
 }
@@ -50,6 +50,7 @@ function startCooldownClock(ad,lastClaim){
       cooldown.textContent="Available again";
       timer.textContent="Ready";
       button.disabled=false;
+      button.classList.remove("watched");
       button.textContent="View Ad";
       return;
     }
@@ -57,7 +58,7 @@ function startCooldownClock(ad,lastClaim){
     const hours=Math.floor(totalSeconds/3600);
     const minutes=Math.floor((totalSeconds%3600)/60);
     const seconds=totalSeconds%60;
-    cooldown.textContent="Already viewed — available again in "+hours+"h "+String(minutes).padStart(2,"0")+"m "+String(seconds).padStart(2,"0")+"s";
+    cooldown.textContent="✓ Already watched — available again in "+hours+"h "+String(minutes).padStart(2,"0")+"m "+String(seconds).padStart(2,"0")+"s";
   }
   update();
   const interval=setInterval(()=>{update();if(cooldown.textContent==="Available again")clearInterval(interval);},1000);
@@ -108,7 +109,7 @@ async function claimReward(id){
   button.disabled=true;button.textContent="Claiming...";
   const {data,error}=await supabaseClient.rpc("claim_ptc_reward",{p_ad_id:id});
   if(error){button.disabled=false;button.textContent="Claim Reward";message.textContent=error.message||"Could not claim reward.";message.style.color="#b00020";return;}
-  delete activeTimers[id];timer.textContent="Reward claimed successfully!";button.textContent="+"+data+" earned";
+  delete activeTimers[id];timer.textContent="✓ Already watched";button.textContent="✓ Watched";button.classList.add("watched");button.disabled=true;button.onclick=null;
   message.textContent="Your reward was added to your balance.";message.style.color="#111";
   const ad=window.ptcAds.find(item=>item.id===id);
   if(ad)startCooldownClock(ad,new Date());
