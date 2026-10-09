@@ -27,10 +27,15 @@ async function loadAds(){
   if(error){message.textContent="Could not load advertisements.";message.style.color="#b00020";return;}
   if(!ads||ads.length===0){message.textContent="No advertisements available right now.";return;}
   window.ptcAds=ads;
-  const {data:views}=await supabaseClient.from("ptc_views").select("ad_id,claimed_at").eq("user_id",session.user.id).not("claimed_at","is",null).order("claimed_at",{ascending:false});
+  const {data:views,error:viewError}=await supabaseClient.from("ptc_views").select("ad_id,claimed_at,started_at,cancelled_at").eq("user_id",session.user.id).order("claimed_at",{ascending:false,nullsFirst:false});
+  if(viewError){adsContainer.innerHTML="";message.textContent="Could not verify your ad history. Please refresh the page or try again shortly; ads are hidden to avoid showing an incorrect Ready status.";message.style.color="#b00020";return;}
   const lastClaim={};
-  (views||[]).forEach(v=>{if(lastClaim[v.ad_id]===undefined)lastClaim[v.ad_id]=new Date(v.claimed_at);});
-  adsContainer.innerHTML=ads.map((ad,index)=>{
+  (views||[]).forEach(v=>{if(v.claimed_at && lastClaim[v.ad_id]===undefined)lastClaim[v.ad_id]=new Date(v.claimed_at);});
+  message.textContent="";
+  const uniqueAds=[];const seenAds=new Set();
+  for(const ad of ads){const fingerprint=[String(ad.title||"").trim().toLowerCase(),String(ad.url||"").trim().replace(/\\/$/,"")].join("|");if(seenAds.has(fingerprint))continue;seenAds.add(fingerprint);uniqueAds.push(ad);}
+  window.ptcAds=uniqueAds;
+  adsContainer.innerHTML=uniqueAds.map((ad,index)=>{
     const last=lastClaim[ad.id];
     const cooldownMs=Number(ad.cooldown_hours||24)*60*60*1000;
     const available=!last||Date.now()-last.getTime()>=cooldownMs;
@@ -38,7 +43,7 @@ async function loadAds(){
     const buttonText=available?"View Ad":"✓ Watched";
     return `<article class="ad-card" id="card-${ad.id}"><h2>${index+1}. ${escapeHtml(ad.title)}</h2><p>${escapeHtml(ad.description||"")}</p><div class="ad-meta"><span>Reward: <strong>${ad.reward}</strong></span><span>Time: <strong>${ad.duration_seconds}s</strong></span></div><div class="timer" id="timer-${ad.id}">${initialTimer}</div><div class="cooldown" id="cooldown-${ad.id}">${available?"":"✓ Already watched — available again soon..."}</div><button class="ad-button ${available?"":"watched"}" id="button-${ad.id}" ${available?"":"disabled"} onclick="startAd(${ad.id})">${buttonText}</button></article>`;
   }).join("");
-  ads.forEach(ad=>{if(lastClaim[ad.id])startCooldownClock(ad,lastClaim[ad.id]);});
+  uniqueAds.forEach(ad=>{if(lastClaim[ad.id])startCooldownClock(ad,lastClaim[ad.id]);});
 }
 
 function startCooldownClock(ad,lastClaim){
@@ -73,10 +78,10 @@ async function startAd(id){
   button.disabled=true;button.textContent="Starting...";
   const {data:duration,error}=await supabaseClient.rpc("start_ptc_ad",{p_ad_id:id});
   if(error){
-    button.disabled=false;button.textContent="View Ad";
-    message.textContent=error.message||"Could not start the advertisement.";
-    message.style.color="#b00020";
-    if((error.message||"").toLowerCase().includes("already viewed"))loadAds();
+    const errorText=error.message||"Could not start the advertisement.";
+    message.textContent=errorText;message.style.color="#b00020";
+    if(/already viewed|in progress|recently/i.test(errorText)){button.disabled=true;button.textContent="Refreshing status...";await loadAds();}
+    else{button.disabled=false;button.textContent="View Ad";}
     return;
   }
   window.open(ad.url,"_blank","noopener,noreferrer");
@@ -110,9 +115,9 @@ async function claimReward(id){
   const {data,error}=await supabaseClient.rpc("claim_ptc_reward",{p_ad_id:id});
   if(error){button.disabled=false;button.textContent="Claim Reward";message.textContent=error.message||"Could not claim reward.";message.style.color="#b00020";return;}
   delete activeTimers[id];timer.textContent="✓ Already watched";button.textContent="✓ Watched";button.classList.add("watched");button.disabled=true;button.onclick=null;
+  message.textContent="Your reward was added to your balance. Refreshing ad status...";message.style.color="#111";
+  await loadAds();
   message.textContent="Your reward was added to your balance.";message.style.color="#111";
-  const ad=window.ptcAds.find(item=>item.id===id);
-  if(ad)startCooldownClock(ad,new Date());
 }
 
 document.addEventListener("visibilitychange",async()=>{
