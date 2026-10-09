@@ -94,6 +94,7 @@ async function loadDashboard() {
   }
   todayEarnings.textContent = profile.today_earnings ?? 0;
   totalEarnings.textContent = profile.total_earnings ?? 0;
+  window.renderEarningsChart(profile.today_earnings, profile.total_earnings);
 }
 loadDashboard();
 </script>
