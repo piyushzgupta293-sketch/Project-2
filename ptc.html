@@ -44,7 +44,7 @@ async function loadAds(){
   (views||[]).forEach(v=>{if(v.claimed_at && lastClaim[v.ad_id]===undefined)lastClaim[v.ad_id]=new Date(v.claimed_at);});
   message.textContent="";
   const uniqueAds=[];const seenAds=new Set();
-  for(const ad of ads){const fingerprint=[String(ad.title||"").trim().toLowerCase(),String(ad.url||"").trim().replace(/\\/$/,"")].join("|");if(seenAds.has(fingerprint))continue;seenAds.add(fingerprint);uniqueAds.push(ad);}
+  for(const ad of ads){const fingerprint=[String(ad.title||"").trim().toLowerCase(),String(ad.url||"").trim().replace(/\/$/,"")].join("|");if(seenAds.has(fingerprint))continue;seenAds.add(fingerprint);uniqueAds.push(ad);}
   window.ptcAds=uniqueAds;
   adsContainer.innerHTML=uniqueAds.map((ad,index)=>{
     const last=lastClaim[ad.id];
