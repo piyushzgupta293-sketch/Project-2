@@ -38,10 +38,15 @@ async function loadAds(){
   if(error){adsContainer.innerHTML="";message.textContent="Could not load advertisements: "+(error.message||error.details||error.hint||"Unknown Supabase error");message.style.color="#b00020";console.error("PTC ads query failed:",error);return;}
   if(!ads||ads.length===0){message.textContent="No advertisements available right now.";return;}
   window.ptcAds=ads;
-  const {data:views,error:viewError}=await supabaseClient.from("ptc_views").select("ad_id,claimed_at,started_at,cancelled_at").eq("user_id",session.user.id).order("claimed_at",{ascending:false,nullsFirst:false});
+  const {data:views,error:viewError}=await supabaseClient.from("ptc_views").select("ad_id,claimed_at,viewed_at,started_at,cancelled_at").eq("user_id",session.user.id).order("claimed_at",{ascending:false,nullsFirst:false});
   if(viewError){adsContainer.innerHTML="";message.textContent="Could not verify your ad history. Please refresh the page or try again shortly; ads are hidden to avoid showing an incorrect Ready status.";message.style.color="#b00020";return;}
   const lastClaim={};
-  (views||[]).forEach(v=>{if(v.claimed_at && lastClaim[v.ad_id]===undefined)lastClaim[v.ad_id]=new Date(v.claimed_at);});
+  (views||[]).forEach(v=>{
+    // Current claims use claimed_at. Older successful claims predate that column;
+    // those legacy rows have viewed_at but no started_at.
+    const claimTime=v.claimed_at || (!v.started_at && !v.cancelled_at ? v.viewed_at : null);
+    if(claimTime && lastClaim[v.ad_id]===undefined)lastClaim[v.ad_id]=new Date(claimTime);
+  });
   message.textContent="";
   const uniqueAds=[];const seenAds=new Set();
   for(const ad of ads){const fingerprint=[String(ad.title||"").trim().toLowerCase(),String(ad.url||"").trim().replace(/\/$/,"")].join("|");if(seenAds.has(fingerprint))continue;seenAds.add(fingerprint);uniqueAds.push(ad);}
