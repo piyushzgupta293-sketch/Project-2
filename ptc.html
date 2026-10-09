@@ -11,22 +11,12 @@
 </head>
 <body>
 <main class="auth-page"><section class="auth-card">
-<nav class="site-menu" aria-label="Main navigation">
-  <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="siteMenuLinks" onclick="toggleSiteMenu()">☰ Menu</button>
-  <div class="site-menu-links" id="siteMenuLinks" hidden>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="faucet.html">Faucet</a>
-    <a href="ptc.html">PTC Ads</a>
-    <a href="transactions.html">Transactions</a>
-    <span class="menu-coming-soon">Withdrawals <small>Coming soon</small></span>
-    <span class="menu-coming-soon">Deposits <small>Coming soon</small></span>
-  </div>
-</nav>
 <a class="back" href="dashboard.html">← Dashboard</a><div class="brand">Project-2</div><h1>PTC Ads</h1><p class="subtitle">View advertisements and earn rewards.</p>
 <div id="ads" class="ptc-list"></div><p class="message" id="message">Loading ad list… If this message stays, the page script may not be running.</p>
 </section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
+<script src="header.js"></script>
 <script>
 const adsContainer=document.getElementById("ads"),message=document.getElementById("message");
 const activeTimers={};
@@ -175,27 +165,6 @@ loadAds().catch(error=>{
   console.error("PTC page initialization failed:",error);
   message.textContent="PTC page error: "+(error&&error.message?error.message:String(error));
   message.style.color="#b00020";
-});
-</script>
-<script>
-function toggleSiteMenu(){
-  const button=document.querySelector(".menu-toggle");
-  const links=document.getElementById("siteMenuLinks");
-  if(!button||!links)return;
-  const opening=links.hidden;
-  links.hidden=!opening;
-  button.setAttribute("aria-expanded",String(opening));
-  button.textContent=opening?"✕ Close Menu":"☰ Menu";
-}
-document.addEventListener("click",function(event){
-  const menu=document.querySelector(".site-menu");
-  const button=document.querySelector(".menu-toggle");
-  const links=document.getElementById("siteMenuLinks");
-  if(menu&&button&&links&&!menu.contains(event.target)){
-    links.hidden=true;
-    button.setAttribute("aria-expanded","false");
-    button.textContent="☰ Menu";
-  }
 });
 </script>
 </body>
