@@ -15,3 +15,14 @@ button[type=submit]:hover{background:#222}
 .turnstile-placeholder{margin-top:20px;border:1px dashed #ccc;border-radius:7px;padding:14px;text-align:center;font-size:13px;color:#777}
 .hidden{display:none}
 .message{text-align:center;font-size:14px;min-height:18px;margin:14px 0 0}
+
+
+/* Shared mobile-friendly navigation */
+.site-menu{position:relative;margin:0 0 22px}
+.menu-toggle{width:100%;padding:12px 14px;border:1px solid #d7d7d7;border-radius:8px;background:#f7f7f7;color:#111;font-size:15px;font-weight:700;text-align:left;cursor:pointer}
+.site-menu-links{display:grid;gap:2px;margin-top:8px;padding:7px;border:1px solid #e0e0e0;border-radius:9px;background:#fff}
+.site-menu-links[hidden]{display:none}
+.site-menu-links a,.menu-coming-soon{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 10px;border-radius:6px;color:#111;text-decoration:none;font-size:14px;font-weight:600}
+.site-menu-links a:hover{background:#f3f3f3}
+.menu-coming-soon{color:#777;font-weight:500}
+.menu-coming-soon small{font-size:11px;color:#888;font-weight:400}
