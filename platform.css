@@ -77,3 +77,25 @@ body{background:var(--platform-bg);background-image:radial-gradient(ellipse at 7
 .auth-card:not(:has(#authForm)) .faucet-hero{grid-template-columns:1fr;padding:18px}
 .auth-card:not(:has(#authForm)) .faucet-hero .coin{grid-row:auto;margin-bottom:10px}
 }
+
+/* Earnings history and source breakdown */
+.earnings-chart-card,.source-earnings{margin:0 0 28px;padding:22px;border:1px solid var(--theme-border,#e3eaf5);border-radius:18px;background:var(--theme-surface,#fff);color:var(--theme-text,#17243b);box-shadow:0 6px 20px rgba(20,45,90,.045)}
+.earnings-chart-card h2,.source-earnings h2{margin:0 0 6px;color:var(--theme-text,#17243b);font-size:20px}
+.earnings-chart-card>p,.source-earnings .section-heading p{margin:0 0 18px;color:var(--theme-muted,#73819a);font-size:13px}
+.earnings-chart{display:flex;align-items:flex-end;justify-content:space-around;gap:12px;min-height:245px;padding:18px 10px 4px;border:1px solid var(--theme-border,#e3eaf5);border-radius:14px;background:var(--theme-box,#f8fbff)}
+.chart-column{display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;justify-content:flex-end;gap:9px;height:215px}
+.chart-value{max-width:100%;color:var(--theme-text,#17243b);font-size:12px;font-weight:800;text-align:center;overflow-wrap:anywhere}
+.chart-bar-wrap{display:flex;align-items:flex-end;justify-content:center;width:min(64px,72%);height:150px;border-radius:10px 10px 3px 3px;background:var(--theme-soft,#eaf2ff);overflow:hidden}
+.chart-bar{width:100%;min-height:8px;border-radius:9px 9px 2px 2px;background:var(--theme-accent,#2463eb);transition:height .25s ease}
+.chart-column.yesterday .chart-bar{opacity:.72}
+.chart-column.total .chart-bar{background:var(--theme-accent-dark,#194ac0)}
+.chart-label{color:var(--theme-muted,#73819a);font-size:12px;font-weight:750;text-align:center}
+.source-earnings .section-heading{margin-bottom:15px}
+.source-earnings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.source-earning-card{display:flex;min-width:0;flex-direction:column;align-items:flex-start;gap:8px;padding:17px;border:1px solid var(--theme-border,#e3eaf5);border-radius:15px;background:var(--theme-box,#fff);color:var(--theme-text,#17243b)}
+.source-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;background:var(--theme-soft,#eaf2ff);font-size:19px}
+.source-name{font-size:13px;font-weight:750;color:var(--theme-muted,#73819a)}
+.source-earning-card strong{font-size:20px;line-height:1.25;overflow-wrap:anywhere}
+.source-earning-card small{font-size:11px;color:var(--theme-muted,#73819a)}
+@media(min-width:851px){.dashboard-stats.period-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.earnings-chart-card,.source-earnings{padding:15px}.source-earnings-grid{grid-template-columns:1fr}.source-earning-card{display:grid;grid-template-columns:38px 1fr;align-items:center;gap:3px 10px}.source-icon{grid-row:1/span 2}.source-earning-card strong,.source-earning-card small{grid-column:2}.chart-value{font-size:10px}.chart-label{font-size:11px}.earnings-chart{gap:5px;padding-inline:4px}}
