@@ -19,12 +19,23 @@
 <script>
 const adsContainer=document.getElementById("ads"),message=document.getElementById("message");
 const activeTimers={};
+message.textContent="Connecting to the ad database...";
+message.style.color="#555";
+window.addEventListener("error",event=>{
+  message.textContent="Page script error: "+(event.message||"Unknown JavaScript error");
+  message.style.color="#b00020";
+});
+window.addEventListener("unhandledrejection",event=>{
+  const reason=event.reason;
+  message.textContent="Page request error: "+(reason&&reason.message?reason.message:String(reason||"Unknown error"));
+  message.style.color="#b00020";
+});
 async function getSession(){const {data,error}=await supabaseClient.auth.getSession();if(error||!data.session){window.location.href="index.html";return null;}return data.session;}
 
 async function loadAds(){
   const session=await getSession();if(!session)return;
   const {data:ads,error}=await supabaseClient.from("ptc_ads").select("id,title,description,url,reward,duration_seconds,cooldown_hours").eq("active",true).order("id",{ascending:true});
-  if(error){adsContainer.innerHTML="";message.textContent="Could not load advertisements: "+(error.message||"Unknown Supabase error");message.style.color="#b00020";console.error("PTC ads query failed:",error);return;}
+  if(error){adsContainer.innerHTML="";message.textContent="Could not load advertisements: "+(error.message||error.details||error.hint||"Unknown Supabase error");message.style.color="#b00020";console.error("PTC ads query failed:",error);return;}
   if(!ads||ads.length===0){message.textContent="No advertisements available right now.";return;}
   window.ptcAds=ads;
   const {data:views,error:viewError}=await supabaseClient.from("ptc_views").select("ad_id,claimed_at,started_at,cancelled_at").eq("user_id",session.user.id).order("claimed_at",{ascending:false,nullsFirst:false});
