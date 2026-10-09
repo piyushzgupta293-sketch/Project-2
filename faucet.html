@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project-2 — Faucet</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.faucet-hero{border:1px solid #e5e5e5;border-radius:12px;padding:22px;text-align:center;background:#fafafa;margin:18px 0}
+.coin{font-size:48px;line-height:1;margin:8px 0 16px}
+.reward{font-size:34px;font-weight:800;margin:6px 0}
+.faucet-note{font-size:14px;color:#666;line-height:1.5}
+.faucet-button{width:100%;padding:14px;border:0;border-radius:8px;background:#111;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.faucet-button:disabled{background:#e2e2e2;color:#777;cursor:not-allowed}
+.faucet-status{margin-top:14px;text-align:center;font-size:14px;min-height:20px;color:#555}
+.faucet-cooldown{margin-top:12px;padding:12px;border-radius:8px;background:#f4f4f4;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.faucet-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.faucet-links a{color:#111;font-weight:600}
+</style>
+</head>
+<body>
+<main class="auth-page">
+<section class="auth-card">
+<a class="back" href="dashboard.html" style="display:inline-block;margin-bottom:18px;color:#111;font-weight:600;text-decoration:none">← Dashboard</a>
+<div class="brand">Project-2</div>
+<h1>Faucet</h1>
+<p class="subtitle">Claim a small reward every 10 minutes.</p>
+<div class="faucet-hero">
+  <div class="coin" aria-hidden="true">🪙</div>
+  <div class="faucet-note">Your next available reward</div>
+  <div class="reward">+1 point</div>
+  <div class="faucet-note">One claim every 10 minutes. The cooldown is checked securely by the database.</div>
+</div>
+<button type="button" class="faucet-button" id="claimButton" disabled>Checking availability…</button>
+<div class="faucet-cooldown" id="countdown" aria-live="polite">Checking claim timer…</div>
+<p class="faucet-status" id="message" aria-live="polite"></p>
+<div class="faucet-links">
+  <a href="transactions.html">Transaction history</a>
+  <a href="ptc.html">PTC Ads</a>
+</div>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script>
+const claimButton = document.getElementById("claimButton");
+const countdown = document.getElementById("countdown");
+const message = document.getElementById("message");
+let nextClaimAt = null;
+let timerHandle = null;
+let claiming = false;
+
+async function getSignedInSession() {
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error || !data.session) {
+    window.location.href = "index.html";
+    return null;
+  }
+  return data.session;
+}
+
+function setMessage(text, isError = false) {
+  message.textContent = text;
+  message.style.color = isError ? "#b00020" : "#166534";
+}
+
+function renderTimer() {
+  if (timerHandle) clearInterval(timerHandle);
+  const update = () => {
+    if (!nextClaimAt) {
+      countdown.textContent = "Ready to claim";
+      if (!claiming) {
+        claimButton.disabled = false;
+        claimButton.textContent = "Claim 1 Point";
+      }
+      if (timerHandle) clearInterval(timerHandle);
+      return;
+    }
+    const remaining = new Date(nextClaimAt).getTime() - Date.now();
+    if (remaining <= 0) {
+      nextClaimAt = null;
+      countdown.textContent = "Ready to claim";
+      if (!claiming) {
+        claimButton.disabled = false;
+        claimButton.textContent = "Claim 1 Point";
+      }
+      if (timerHandle) clearInterval(timerHandle);
+      return;
+    }
+    const totalSeconds = Math.ceil(remaining / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    countdown.textContent = "Next claim in " + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    if (!claiming) {
+      claimButton.disabled = true;
+      claimButton.textContent = "Please wait";
+    }
+  };
+  update();
+  if (nextClaimAt) timerHandle = setInterval(update, 1000);
+}
+
+async function loadStatus() {
+  const session = await getSignedInSession();
+  if (!session) return;
+  claimButton.disabled = true;
+  claimButton.textContent = "Checking availability…";
+  const { data, error } = await supabaseClient.rpc("get_faucet_status");
+  if (error) {
+    countdown.textContent = "Could not load claim timer";
+    claimButton.disabled = true;
+    claimButton.textContent = "Temporarily unavailable";
+    setMessage(error.message || "Could not check faucet status. Please refresh and try again.", true);
+    return;
+  }
+  nextClaimAt = data && data.next_claim_at ? data.next_claim_at : null;
+  renderTimer();
+  if (data && data.can_claim) setMessage("Your faucet reward is ready.");
+  else setMessage("Your previous claim is saved. Come back when the timer ends.");
+}
+
+claimButton.addEventListener("click", async () => {
+  if (claiming || nextClaimAt && new Date(nextClaimAt).getTime() > Date.now()) return;
+  const session = await getSignedInSession();
+  if (!session) return;
+  claiming = true;
+  claimButton.disabled = true;
+  claimButton.textContent = "Claiming…";
+  setMessage("");
+  const { data, error } = await supabaseClient.rpc("claim_faucet");
+  claiming = false;
+  if (error) {
+    setMessage(/cooldown active/i.test(error.message || "") ? "You have already claimed. Please wait for the timer." : (error.message || "Claim failed. Please try again."), true);
+    await loadStatus();
+    return;
+  }
+  nextClaimAt = data && data.next_claim_at ? data.next_claim_at : null;
+  setMessage("Success! 1 point was added to your balance and transaction history.");
+  renderTimer();
+});
+
+loadStatus();
+</script>
+</body>
+</html>
