@@ -10,13 +10,16 @@
       <span class="top-balance-label">Available balance</span>
       <strong id="topBalanceValue">Loading…</strong>
     </div>
-    <div class="profile-wrap">
+    <div class="topbar-actions">
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to light theme" title="Switch theme">☀️</button>
+      <div class="profile-wrap">
       <button type="button" class="profile-circle" id="profileButton" aria-label="Open profile menu" aria-expanded="false">👤</button>
       <div class="profile-dropdown" id="profileDropdown" hidden>
         <div class="profile-dropdown-label">Signed in as</div>
         <div class="profile-email" id="profileEmail">Loading…</div>
         <button type="button" class="profile-logout" id="profileLogout">Log out</button>
         <p class="profile-error" id="profileError" role="status"></p>
+      </div>
       </div>
     </div>`;
   const nav = document.createElement("nav");
@@ -62,6 +65,21 @@
   const balanceNode = header.querySelector("#topBalanceValue");
   const logoutButton = header.querySelector("#profileLogout");
   const errorNode = header.querySelector("#profileError");
+  const themeButton = header.querySelector("#themeToggle");
+  function syncThemeButton() {
+    const light = document.documentElement.dataset.theme === "light";
+    themeButton.textContent = light ? "🌙" : "☀️";
+    themeButton.setAttribute("aria-label", light ? "Switch to dark theme" : "Switch to light theme");
+    themeButton.title = light ? "Switch to dark theme" : "Switch to light theme";
+  }
+  syncThemeButton();
+  themeButton.addEventListener("click", () => {
+    if (typeof window.applySiteTheme === "function") {
+      const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+      window.applySiteTheme(next);
+      syncThemeButton();
+    }
+  });
 
   function closeProfile() {
     dropdown.hidden = true;
