@@ -143,6 +143,7 @@ async function claimReward(id){
   delete activeTimers[id];timer.textContent="✓ Already Watched";button.textContent="Already Watched";button.classList.add("watched");button.disabled=true;button.onclick=null;
   message.textContent="Your reward was added to your balance. Refreshing ad status...";message.style.color="#111";
   await loadAds();
+  if(window.refreshAccountHeader) window.refreshAccountHeader();
   message.textContent="Your reward was added to your balance.";message.style.color="#111";
 }
 
