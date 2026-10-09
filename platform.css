@@ -99,3 +99,14 @@ body{background:var(--platform-bg);background-image:radial-gradient(ellipse at 7
 .source-earning-card small{font-size:11px;color:var(--theme-muted,#73819a)}
 @media(min-width:851px){.dashboard-stats.period-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.earnings-chart-card,.source-earnings{padding:15px}.source-earnings-grid{grid-template-columns:1fr}.source-earning-card{display:grid;grid-template-columns:38px 1fr;align-items:center;gap:3px 10px}.source-icon{grid-row:1/span 2}.source-earning-card strong,.source-earning-card small{grid-column:2}.chart-value{font-size:10px}.chart-label{font-size:11px}.earnings-chart{gap:5px;padding-inline:4px}}
+
+/* Ensure the dashboard graph is visibly rendered, including on small phones */
+#earningsChart.earnings-chart{display:flex!important;align-items:flex-end!important;justify-content:space-around!important;gap:12px!important;min-height:250px!important;height:250px!important;padding:18px 10px 8px!important;box-sizing:border-box!important;overflow:visible!important}
+#earningsChart .chart-column{display:flex!important;flex:1 1 0!important;min-width:0!important;height:215px!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;gap:9px!important}
+#earningsChart .chart-value{display:block!important;font-size:11px!important;line-height:1.25!important;text-align:center!important;overflow-wrap:anywhere!important}
+#earningsChart .chart-bar-wrap{display:flex!important;flex:0 0 150px!important;align-items:flex-end!important;justify-content:center!important;width:min(58px,75%)!important;height:150px!important;min-height:150px!important;overflow:hidden!important;border-radius:10px 10px 3px 3px!important;background:var(--theme-soft,#eaf2ff)!important}
+#earningsChart .chart-bar{display:block!important;flex:0 0 auto!important;width:100%!important;min-height:8px!important;border-radius:9px 9px 2px 2px!important;background:var(--theme-accent,#2463eb)!important}
+#earningsChart .chart-column.yesterday .chart-bar{opacity:.72!important}
+#earningsChart .chart-column.total .chart-bar{background:var(--theme-accent-dark,#194ac0)!important}
+#earningsChart .chart-label{display:block!important;font-size:12px!important;font-weight:800!important;text-align:center!important}
+@media(max-width:600px){#earningsChart.earnings-chart{gap:4px!important;padding:14px 3px 7px!important}#earningsChart .chart-value{font-size:9px!important}#earningsChart .chart-label{font-size:10px!important}#earningsChart .chart-bar-wrap{width:65%!important}}
