@@ -244,3 +244,12 @@ a{transition:color .15s,background .15s}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+
+/* Fix duplicate menu symbol: the button text already contains ☰ / ✕. */
+.menu-toggle:before,
+.menu-toggle[aria-expanded="true"]:before{
+  content:none!important;
+  display:none!important;
+}
+.menu-toggle{padding-left:15px!important}
