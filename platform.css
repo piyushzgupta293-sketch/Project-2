@@ -136,3 +136,21 @@ body{background:var(--platform-bg);background-image:radial-gradient(ellipse at 7
 #earningsChart .chart-column{position:relative!important;z-index:1!important}
 #earningsChart .chart-bar-wrap{position:relative!important;z-index:2!important;border:1px solid var(--theme-border,#d9e5f7)!important}
 #earningsChart .chart-bar{position:relative!important;z-index:3!important;opacity:1!important}
+
+
+/* Earnings totals styled exactly like the Faucet / PTC method cards */
+@media(max-width:600px){
+  .dashboard-stats.period-stats .earning-item{
+    display:flex!important;flex-direction:row!important;align-items:center!important;gap:12px!important;
+    min-height:84px!important;padding:15px!important;border:1px solid var(--theme-border,#e2eaf5)!important;
+    border-radius:16px!important;background:var(--theme-surface,#fff)!important;
+    box-shadow:0 4px 14px rgba(34,64,110,.04)!important;text-align:left!important
+  }
+  .dashboard-stats.period-stats .stat-icon{flex:0 0 42px!important;width:42px!important;height:42px!important;margin:0!important}
+  .dashboard-stats.period-stats .earning-item p:first-of-type{margin:0 0 4px!important;font-size:13px!important;line-height:1.3!important}
+  .dashboard-stats.period-stats .earning-item p:last-of-type{margin:0!important;font-size:18px!important;line-height:1.3!important;letter-spacing:0!important}
+  .dashboard-stats.period-stats .stat-caption{display:block!important;margin-top:3px!important;font-size:10px!important}
+  .dashboard-stats.period-stats .earning-item p:first-of-type,
+  .dashboard-stats.period-stats .earning-item p:last-of-type,
+  .dashboard-stats.period-stats .stat-caption{min-width:0}
+}
