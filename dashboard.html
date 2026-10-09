@@ -10,13 +10,50 @@
 <main class="auth-page">
   <section class="auth-card">
     <div class="brand">Project-2</div>
-    <h1>Dashboard</h1>
-    <p class="subtitle">Welcome to your account</p>
+    <section class="dashboard-hero">
+      <div>
+        <span class="eyebrow">YOUR EARNING SPACE</span>
+        <h1>Welcome back!</h1>
+        <p class="subtitle">Choose a way to earn and keep track of your progress.</p>
+      </div>
+      <div class="hero-mark" aria-hidden="true">↗</div>
+    </section>
 
-    <div class="earnings-grid">
-      <div class="earning-item"><p><strong>Today's Earnings</strong></p><p id="todayEarnings">Loading...</p></div>
-      <div class="earning-item"><p><strong>Total Earnings</strong></p><p id="totalEarnings">Loading...</p></div>
+    <section class="earnings-grid dashboard-stats" aria-label="Earnings overview">
+      <div class="earning-item stat-card">
+        <span class="stat-icon">◷</span>
+        <p><strong>Today's Earnings</strong></p>
+        <p id="todayEarnings">Loading...</p>
+        <span class="stat-caption">Earned so far today</span>
+      </div>
+      <div class="earning-item stat-card">
+        <span class="stat-icon">↗</span>
+        <p><strong>Total Earnings</strong></p>
+        <p id="totalEarnings">Loading...</p>
+        <span class="stat-caption">All-time earnings</span>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div><h2>Start earning</h2><p>Pick an earning method to continue.</p></div>
     </div>
+    <section class="earning-methods">
+      <a class="method-card" href="faucet.html">
+        <span class="method-icon">🪙</span>
+        <span class="method-copy"><strong>Faucet</strong><small>Claim 1 point every 10 minutes</small></span>
+        <span class="method-arrow">→</span>
+      </a>
+      <a class="method-card" href="ptc.html">
+        <span class="method-icon">▶</span>
+        <span class="method-copy"><strong>PTC Ads</strong><small>View advertisements and earn points</small></span>
+        <span class="method-arrow">→</span>
+      </a>
+      <a class="method-card" href="transactions.html">
+        <span class="method-icon">↔</span>
+        <span class="method-copy"><strong>Transactions</strong><small>Review your account activity</small></span>
+        <span class="method-arrow">→</span>
+      </a>
+    </section>
     <p class="message" id="message"></p>
   </section>
 </main>
