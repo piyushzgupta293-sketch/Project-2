@@ -52,7 +52,7 @@ async function loadAds(){
   });
   // Compatibility for old successful rows created before claimed_at existed.
   (views||[]).forEach(v=>{
-    if(lastClaim[v.ad_id]===undefined && !v.started_at && !v.cancelled_at && v.viewed_at){
+    if(lastClaim[v.ad_id]===undefined && !v.cancelled_at && v.viewed_at){
       lastClaim[v.ad_id]=new Date(v.viewed_at);
     }
   });
