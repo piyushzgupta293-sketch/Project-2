@@ -157,3 +157,90 @@ hr{border:0;border-top:1px solid #e5edf7;margin:22px 0}
   .ad-meta{font-size:13px}
   .transaction-top{align-items:flex-start}
 }
+
+
+/* ===== Final polish: typography, readable colours and reliable menu ===== */
+:root{
+  --text-primary:#142743;
+  --text-secondary:#5f718b;
+  --text-soft:#7b8ba2;
+  --blue-border:#c9dcf8;
+}
+body{color:var(--text-primary);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-weight:800}
+p{color:var(--text-secondary)}
+strong{color:#233d60;font-weight:750}
+.subtitle{font-size:15px;line-height:1.65;max-width:48ch}
+.brand{letter-spacing:-.6px}
+.auth-card{isolation:isolate}
+.site-menu{z-index:5}
+.menu-toggle{
+  min-height:48px;position:relative;justify-content:flex-start;
+  padding:13px 15px 13px 45px;background:linear-gradient(110deg,#edf5ff,#f8fbff);
+  border-color:#d1e2fa;color:#194f99;letter-spacing:.1px;
+}
+.menu-toggle:before{
+  content:"☰";position:absolute;left:15px;top:50%;transform:translateY(-50%);
+  font-size:18px;line-height:1;color:#1769e0;
+}
+.menu-toggle:hover{box-shadow:0 4px 12px rgba(23,105,224,.09);transform:translateY(-1px)}
+.menu-toggle[aria-expanded="true"]{background:#e5f0ff;border-color:#a9c9f6}
+.menu-toggle[aria-expanded="true"]:before{content:"×";font-size:23px}
+.site-menu-links{
+  position:relative;z-index:10;display:grid;gap:5px;margin-top:9px;padding:8px;
+  border:1px solid #d8e5f6;border-radius:15px;background:rgba(255,255,255,.98);
+  box-shadow:0 16px 35px rgba(25,59,105,.14);
+}
+.site-menu-links[hidden]{display:none!important}
+.site-menu-links a{
+  min-height:43px;position:relative;display:flex;align-items:center;
+  padding:11px 12px 11px 40px;border:1px solid transparent;border-radius:10px;
+  color:#2d4668;font-weight:700;transition:background .15s,color .15s,border-color .15s;
+}
+.site-menu-links a:before{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  width:18px;text-align:center;color:#3479d5;font-size:15px;
+}
+.site-menu-links a[href*="dashboard"]:before{content:"⌂"}
+.site-menu-links a[href*="faucet"]:before{content:"◉"}
+.site-menu-links a[href*="ptc"]:before{content:"▶"}
+.site-menu-links a[href*="transactions"]:before{content:"↔"}
+.site-menu-links a:hover,.site-menu-links a:focus-visible{
+  background:#edf5ff;border-color:#dceaff;color:#1258bd;text-decoration:none;
+}
+.menu-coming-soon{
+  min-height:42px;padding:10px 12px 10px 40px;position:relative;
+  color:#8a98ac!important;background:#fafcff;border-radius:10px;
+}
+.menu-coming-soon:before{position:absolute;left:15px;content:"•";font-size:18px;color:#a8b6c9}
+.menu-coming-soon small{
+  flex-shrink:0;padding:3px 7px;border-radius:20px;background:#edf1f7;
+  color:#75859b;font-size:10px;font-weight:700;letter-spacing:.2px;
+}
+.back{display:inline-flex;align-items:center;gap:6px;color:#1769e0!important;font-weight:750;text-decoration:none}
+.back:hover,.faucet-links a:hover{color:#104fb5!important;text-decoration:underline}
+.faucet-hero,.ad-card,.transaction-card,#userEmail,#balance,#todayEarnings,#totalEarnings{
+  transition:border-color .18s,box-shadow .18s,transform .18s;
+}
+.ad-card:hover,.transaction-card:hover{
+  border-color:#c6dbf8!important;box-shadow:0 8px 23px rgba(34,79,143,.09);
+}
+.ad-card h2{letter-spacing:-.25px}
+.ad-meta strong{color:#174f9e}
+.reward{font-weight:850}
+.faucet-status,.message{line-height:1.55;overflow-wrap:anywhere}
+input::placeholder{color:#98a6b9;opacity:1}
+button:disabled{cursor:not-allowed}
+button[type=submit]:active,#logoutButton:active,.faucet-button:not(:disabled):active,.ad-button:not(:disabled):active{transform:translateY(1px)}
+a{transition:color .15s,background .15s}
+@media(max-width:480px){
+  .site-menu{margin-bottom:20px}
+  .menu-toggle{min-height:46px}
+  .site-menu-links a,.menu-coming-soon{font-size:13px}
+  .menu-coming-soon small{font-size:9px}
+  .faucet-hero{padding:19px!important}
+  #balance,#todayEarnings,#totalEarnings{font-size:19px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
