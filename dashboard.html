@@ -21,22 +21,22 @@
       <div class="hero-mark" aria-hidden="true">↗</div>
     </section>
 
-    <section class="earnings-grid dashboard-stats" aria-label="Earnings overview">
-      <div class="earning-item stat-card">
-        <span class="stat-icon">◷</span>
-        <p><strong>Today's Earnings</strong></p>
-        <p id="todayEarnings">Loading...</p>
-        <span class="stat-caption">Earned so far today</span>
-      </div>
-      <div class="earning-item stat-card">
-        <span class="stat-icon">↗</span>
-        <p><strong>Total Earnings</strong></p>
-        <p id="totalEarnings">Loading...</p>
-        <span class="stat-caption">All-time earnings</span>
+    <section class="earnings-grid dashboard-stats period-stats" aria-label="Earnings by time period">
+      <div class="earning-item stat-card"><span class="stat-icon">☀️</span><p><strong>Today's Earnings</strong></p><p id="todayEarnings">Loading...</p><span class="stat-caption">Earned since midnight</span></div>
+      <div class="earning-item stat-card"><span class="stat-icon">🌙</span><p><strong>Yesterday</strong></p><p id="yesterdayEarnings">Loading...</p><span class="stat-caption">Previous calendar day</span></div>
+      <div class="earning-item stat-card"><span class="stat-icon">📈</span><p><strong>All-time Earnings</strong></p><p id="totalEarnings">Loading...</p><span class="stat-caption">All recorded earnings</span></div>
+    </section>
+
+    <section class="source-earnings" aria-label="Today's earnings by source">
+      <div class="section-heading"><div><h2>Today's earnings by source</h2><p>See which earning method added your points today.</p></div></div>
+      <div class="source-earnings-grid">
+        <article class="source-earning-card"><span class="source-icon">🪙</span><span class="source-name">Faucet</span><strong id="todayFaucet">Loading...</strong><small>Points earned today</small></article>
+        <article class="source-earning-card"><span class="source-icon">▶️</span><span class="source-name">PTC Ads</span><strong id="todayPtc">Loading...</strong><small>Points earned today</small></article>
+        <article class="source-earning-card"><span class="source-icon">✨</span><span class="source-name">Other</span><strong id="todayOther">Loading...</strong><small>Other earning sources</small></article>
       </div>
     </section>
 
-    <section class="earnings-chart-card"><h2>Earnings graph</h2><p>Compare today's earnings with your all-time earnings.</p><div id="earningsChart" class="earnings-chart"><p>Loading graph…</p></div></section>
+    <section class="earnings-chart-card"><h2>📉 Earnings history</h2><p>Compare today, yesterday, and your all-time earnings.</p><div id="earningsChart" class="earnings-chart"><p>Loading graph…</p></div></section>
     <div class="section-heading">
       <div><h2>Start earning</h2><p>Pick an earning method to continue.</p></div>
     </div>
@@ -69,8 +69,29 @@
 <script src="header.js"></script>
 <script>
 const todayEarnings = document.getElementById("todayEarnings");
+const yesterdayEarnings = document.getElementById("yesterdayEarnings");
 const totalEarnings = document.getElementById("totalEarnings");
 const message = document.getElementById("message");
+
+function localDayStart(offsetDays = 0) {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + offsetDays);
+  return date;
+}
+function formatPoints(value) {
+  return (Number(value) || 0).toLocaleString(undefined, { maximumFractionDigits: 4 }) + " points";
+}
+function classifyEarning(transaction) {
+  const type = String(transaction.type || "").toLowerCase();
+  const description = String(transaction.description || "").toLowerCase();
+  const combined = type + " " + description;
+  const amount = Number(transaction.amount) || 0;
+  if (amount <= 0 || /deposit|withdraw|transfer|purchase|payment|reversal|refund/.test(combined)) return null;
+  if (/faucet/.test(combined)) return "faucet";
+  if (/\bptc\b|ad reward|advertisement|\bads?\b/.test(combined)) return "ptc";
+  return "other";
+}
 
 async function loadDashboard() {
   const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
@@ -79,22 +100,46 @@ async function loadDashboard() {
     return;
   }
 
-  const { data: profile, error: profileError } = await supabaseClient
-    .from("profiles")
-    .select("today_earnings, total_earnings")
-    .eq("id", sessionData.session.user.id)
-    .single();
+  const userId = sessionData.session.user.id;
+  const { data: transactions, error: transactionError } = await supabaseClient
+    .from("transactions")
+    .select("type,amount,description,created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
-  if (profileError) {
-    message.textContent = "Could not load your earnings.";
+  if (transactionError) {
+    message.textContent = "Could not load earnings history. Please refresh and try again.";
     message.style.color = "#b00020";
-    todayEarnings.textContent = "—";
-    totalEarnings.textContent = "—";
+    [todayEarnings, yesterdayEarnings, totalEarnings, document.getElementById("todayFaucet"), document.getElementById("todayPtc"), document.getElementById("todayOther")].forEach(el => { if (el) el.textContent = "—"; });
     return;
   }
-  todayEarnings.textContent = profile.today_earnings ?? 0;
-  totalEarnings.textContent = profile.total_earnings ?? 0;
-  window.renderEarningsChart(profile.today_earnings, profile.total_earnings);
+
+  const todayStart = localDayStart(0);
+  const tomorrowStart = localDayStart(1);
+  const yesterdayStart = localDayStart(-1);
+  const totals = { today: 0, yesterday: 0, all: 0, faucet: 0, ptc: 0, other: 0 };
+  (transactions || []).forEach(transaction => {
+    const source = classifyEarning(transaction);
+    if (!source) return;
+    const amount = Number(transaction.amount) || 0;
+    const created = new Date(transaction.created_at);
+    if (Number.isNaN(created.getTime())) return;
+    totals.all += amount;
+    if (created >= todayStart && created < tomorrowStart) {
+      totals.today += amount;
+      totals[source] += amount;
+    } else if (created >= yesterdayStart && created < todayStart) {
+      totals.yesterday += amount;
+    }
+  });
+
+  todayEarnings.textContent = formatPoints(totals.today);
+  yesterdayEarnings.textContent = formatPoints(totals.yesterday);
+  totalEarnings.textContent = formatPoints(totals.all);
+  document.getElementById("todayFaucet").textContent = formatPoints(totals.faucet);
+  document.getElementById("todayPtc").textContent = formatPoints(totals.ptc);
+  document.getElementById("todayOther").textContent = formatPoints(totals.other);
+  window.renderEarningsChart(totals.today, totals.yesterday, totals.all);
 }
 loadDashboard();
 </script>
