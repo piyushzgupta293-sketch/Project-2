@@ -138,6 +138,7 @@ claimButton.addEventListener("click", async () => {
   nextClaimAt = data && data.next_claim_at ? data.next_claim_at : null;
   setMessage("Success! 1 point was added to your balance and transaction history.");
   renderTimer();
+  if (window.refreshAccountHeader) window.refreshAccountHeader();
 });
 
 loadStatus();
