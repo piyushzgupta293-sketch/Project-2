@@ -297,3 +297,110 @@ a{transition:color .15s,background .15s}
   .profile-circle{width:40px;height:40px}
   .earnings-grid{grid-template-columns:1fr}
 }
+
+
+/* ===== Black / dark theme across every page, including login ===== */
+:root{
+  color-scheme:dark!important;
+  --blue:#4d8dff!important;
+  --blue-dark:#2867d8!important;
+  --blue-soft:#172b4b!important;
+  --ink:#f3f6fc!important;
+  --muted:#a8b4c7!important;
+  --line:#2a3850!important;
+  --surface:#111a29!important;
+  --page:#070b13!important;
+  --success:#4adea0!important;
+  --platform-blue:#4d8dff!important;
+  --platform-blue-dark:#2867d8!important;
+  --platform-ink:#f3f6fc!important;
+  --platform-muted:#a8b4c7!important;
+  --platform-line:#2a3850!important;
+  --platform-bg:#070b13!important;
+}
+html,body{
+  background:#070b13!important;
+  background-image:none!important;
+  color:#f3f6fc!important;
+}
+.auth-page{background:#070b13!important;color:#f3f6fc!important}
+.auth-card,
+.auth-card:not(:has(#authForm)),
+.auth-card:not(:has(#authForm)) .account-topbar,
+.auth-card:not(:has(#authForm)) .site-menu,
+.site-menu-links,
+.site-menu-links[hidden],
+.auth-card:not(:has(#authForm)) .site-menu-links,
+.auth-card:not(:has(#authForm)) .site-menu-links[hidden]{
+  background:#101827!important;
+  color:#f3f6fc!important;
+  border-color:#29364b!important;
+  box-shadow:0 16px 45px rgba(0,0,0,.22)!important;
+}
+.auth-card:not(:has(#authForm)) .site-menu{
+  background:linear-gradient(180deg,#111c2e,#0c1422)!important;
+}
+h1,h2,h3,h4,p,strong,b,small,span,div,label,.brand,.section-heading{
+  color:inherit;
+}
+.subtitle,.switch,.faucet-note,.faucet-status,.cooldown,.transaction-description,.transaction-date,.stat-caption,
+.earning-methods small,.section-heading p,.menu-coming-soon,.menu-coming-soon small{
+  color:#a8b4c7!important;
+}
+input,textarea,select{
+  background:#0a1220!important;
+  color:#f3f6fc!important;
+  border-color:#35445c!important;
+}
+input::placeholder,textarea::placeholder{color:#8290a6!important}
+input:focus,textarea:focus,select:focus{border-color:#4d8dff!important}
+button[type=submit],.faucet-button:not(:disabled),.ad-button:not(:disabled){
+  background:#2867d8!important;
+  color:#fff!important;
+}
+button[type=submit]:hover,.faucet-button:not(:disabled):hover,.ad-button:not(:disabled):hover{
+  background:#3d7bea!important;
+}
+.text-button,.faucet-links a,.back{color:#82b0ff!important}
+.turnstile-placeholder{
+  background:#0b1422!important;
+  color:#a8b4c7!important;
+  border-color:#40506a!important;
+}
+.site-menu-links a,.menu-coming-soon{
+  background:transparent!important;
+  color:#e4ebf7!important;
+}
+.site-menu-links a:hover,.auth-card:not(:has(#authForm)) .site-menu-links a:hover{
+  background:#1a2b45!important;
+  border-color:#30466a!important;
+}
+.menu-toggle{
+  background:#182438!important;
+  color:#f3f6fc!important;
+  border-color:#35445c!important;
+}
+.dashboard-hero,.stat-card,.earning-item,.method-card,.faucet-hero,.ad-card,.transaction-card,.empty,
+.faucet-cooldown,.cooldown,.account-topbar,.section-heading{
+  background:#131e30!important;
+  color:#f3f6fc!important;
+  border-color:#2a3a53!important;
+  box-shadow:none!important;
+}
+.dashboard-hero{background:linear-gradient(135deg,#142b4b,#101827)!important}
+.method-card{color:#f3f6fc!important}
+.method-card strong,.method-copy strong,.transaction-type,.transaction-amount,.ad-card h2,
+.earning-item strong,.stat-card strong{color:#f3f6fc!important}
+.method-icon,.stat-icon,.hero-mark{background:#1b3151!important;color:#8db8ff!important}
+.ad-button:disabled,.ad-button.watched,.faucet-button:disabled{
+  background:#293548!important;
+  color:#a8b4c7!important;
+  border-color:#3a4960!important;
+}
+.transaction-amount.positive{color:#4adea0!important}
+.message{color:#c4d0e2}
+hr{border-color:#2a3850!important}
+a{color:#82b0ff}
+@media(max-width:760px){
+  .auth-card:not(:has(#authForm)){background:#101827!important}
+}
