@@ -404,3 +404,73 @@ a{color:#82b0ff}
 @media(max-width:760px){
   .auth-card:not(:has(#authForm)){background:#101827!important}
 }
+
+
+/* ===== Light theme selected from the top-bar theme switch ===== */
+html[data-theme="light"]{
+  color-scheme:light!important;
+  --ink:#172b4d!important;
+  --muted:#64748b!important;
+  --line:#dbe5f2!important;
+  --surface:#ffffff!important;
+  --page:#f3f7fd!important;
+}
+html[data-theme="light"],html[data-theme="light"] body,html[data-theme="light"] .auth-page{
+  background:#f3f7fd!important;background-image:linear-gradient(180deg,#edf4ff 0,#f7faff 240px,#f3f7fd 100%)!important;color:#172b4d!important;
+}
+html[data-theme="light"] .auth-card,
+html[data-theme="light"] .auth-card:not(:has(#authForm)),
+html[data-theme="light"] .account-topbar,
+html[data-theme="light"] .auth-card:not(:has(#authForm)) .account-topbar,
+html[data-theme="light"] .site-menu,
+html[data-theme="light"] .auth-card:not(:has(#authForm)) .site-menu,
+html[data-theme="light"] .site-menu-links,
+html[data-theme="light"] .site-menu-links[hidden],
+html[data-theme="light"] .auth-card:not(:has(#authForm)) .site-menu-links,
+html[data-theme="light"] .auth-card:not(:has(#authForm)) .site-menu-links[hidden]{
+  background:#fff!important;color:#172b4d!important;border-color:#dbe5f2!important;box-shadow:0 12px 35px rgba(28,55,100,.07)!important;
+}
+html[data-theme="light"] .auth-card:not(:has(#authForm)) .site-menu{background:linear-gradient(180deg,#f8fbff,#f3f7ff)!important}
+html[data-theme="light"] h1,html[data-theme="light"] h2,html[data-theme="light"] h3,
+html[data-theme="light"] .brand,html[data-theme="light"] .method-copy strong,
+html[data-theme="light"] .transaction-type,html[data-theme="light"] .transaction-amount,
+html[data-theme="light"] .ad-card h2,html[data-theme="light"] .earning-item strong,
+html[data-theme="light"] .stat-card strong,html[data-theme="light"] .profile-email{
+  color:#172b4d!important;
+}
+html[data-theme="light"] .subtitle,html[data-theme="light"] .switch,
+html[data-theme="light"] .faucet-note,html[data-theme="light"] .faucet-status,
+html[data-theme="light"] .cooldown,html[data-theme="light"] .transaction-description,
+html[data-theme="light"] .transaction-date,html[data-theme="light"] .stat-caption,
+html[data-theme="light"] .earning-methods small,html[data-theme="light"] .section-heading p,
+html[data-theme="light"] .menu-coming-soon,html[data-theme="light"] .menu-coming-soon small{
+  color:#64748b!important;
+}
+html[data-theme="light"] input,html[data-theme="light"] textarea,html[data-theme="light"] select{
+  background:#fff!important;color:#172b4d!important;border-color:#cfdaea!important;
+}
+html[data-theme="light"] input::placeholder,html[data-theme="light"] textarea::placeholder{color:#8290a6!important}
+html[data-theme="light"] .turnstile-placeholder{background:#f7faff!important;color:#7184a0!important;border-color:#b8cbed!important}
+html[data-theme="light"] .site-menu-links a,html[data-theme="light"] .menu-coming-soon{color:#294363!important;background:transparent!important}
+html[data-theme="light"] .site-menu-links a:hover{background:#edf4ff!important;border-color:#dce7ff!important}
+html[data-theme="light"] .menu-toggle{background:#f5f9ff!important;color:#24518e!important;border-color:#d6e4f7!important}
+html[data-theme="light"] .dashboard-hero{background:linear-gradient(115deg,#edf4ff 0%,#f7faff 55%,#fff 100%)!important;border-color:#dce8ff!important}
+html[data-theme="light"] .stat-card,html[data-theme="light"] .earning-item,
+html[data-theme="light"] .method-card,html[data-theme="light"] .faucet-hero,
+html[data-theme="light"] .ad-card,html[data-theme="light"] .transaction-card,
+html[data-theme="light"] .empty,html[data-theme="light"] .faucet-cooldown,
+html[data-theme="light"] .section-heading{
+  background:#fff!important;color:#172b4d!important;border-color:#dfe8f4!important;box-shadow:0 5px 18px rgba(34,67,112,.045)!important;
+}
+html[data-theme="light"] .faucet-hero{background:linear-gradient(145deg,#f7faff,#edf4ff)!important}
+html[data-theme="light"] .method-icon,html[data-theme="light"] .stat-icon{background:#edf3ff!important;color:#2463eb!important}
+html[data-theme="light"] .hero-mark{background:#2463eb!important;color:#fff!important}
+html[data-theme="light"] .profile-dropdown{background:#fff!important;border-color:#d7e5f7!important}
+html[data-theme="light"] .profile-dropdown-label{color:#7a8ba4!important}
+html[data-theme="light"] .profile-circle{background:#e5f0ff!important;color:#1557b8!important;border-color:#c6dcfb!important}
+html[data-theme="light"] .theme-toggle{background:#f5f9ff!important;color:#24518e!important;border-color:#d6e4f7!important}
+html[data-theme="light"] .faucet-button:disabled,html[data-theme="light"] .ad-button:disabled,
+html[data-theme="light"] .ad-button.watched{background:#e8eef7!important;color:#8b9ab0!important;border-color:#dce5f1!important}
+html[data-theme="light"] .transaction-amount.positive{color:#16845b!important}
+html[data-theme="light"] .text-button,html[data-theme="light"] .faucet-links a,
+html[data-theme="light"] .back,html[data-theme="light"] a{color:#1769e0!important}
