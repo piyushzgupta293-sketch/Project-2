@@ -19,8 +19,36 @@
         <p class="profile-error" id="profileError" role="status"></p>
       </div>
     </div>`;
-  const nav = card.querySelector(".site-menu");
-  card.insertBefore(header, nav || card.firstChild);
+  const nav = document.createElement("nav");
+  nav.className = "site-menu";
+  nav.setAttribute("aria-label", "Main navigation");
+  nav.innerHTML = `
+    <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="siteMenuLinks">☰ Menu</button>
+    <div class="site-menu-links" id="siteMenuLinks" hidden>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="faucet.html">Faucet</a>
+      <a href="ptc.html">PTC Ads</a>
+      <a href="transactions.html">Transactions</a>
+      <span class="menu-coming-soon">Withdrawals <small>Coming soon</small></span>
+      <span class="menu-coming-soon">Deposits <small>Coming soon</small></span>
+    </div>`;
+  card.insertBefore(nav, card.firstChild);
+  card.insertBefore(header, nav);
+  const menuButton = nav.querySelector(".menu-toggle");
+  const menuLinks = nav.querySelector("#siteMenuLinks");
+  menuButton.addEventListener("click", () => {
+    const opening = menuLinks.hidden;
+    menuLinks.hidden = !opening;
+    menuButton.setAttribute("aria-expanded", String(opening));
+    menuButton.textContent = opening ? "✕ Close Menu" : "☰ Menu";
+  });
+  document.addEventListener("click", event => {
+    if (!nav.contains(event.target)) {
+      menuLinks.hidden = true;
+      menuButton.setAttribute("aria-expanded", "false");
+      menuButton.textContent = "☰ Menu";
+    }
+  });
 
   const profileButton = header.querySelector("#profileButton");
   const dropdown = header.querySelector("#profileDropdown");
