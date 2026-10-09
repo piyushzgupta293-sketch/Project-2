@@ -24,7 +24,7 @@ async function getSession(){const {data,error}=await supabaseClient.auth.getSess
 async function loadAds(){
   const session=await getSession();if(!session)return;
   const {data:ads,error}=await supabaseClient.from("ptc_ads").select("id,title,description,url,reward,duration_seconds,cooldown_hours").eq("active",true).order("id",{ascending:true});
-  if(error){message.textContent="Could not load advertisements.";message.style.color="#b00020";return;}
+  if(error){adsContainer.innerHTML="";message.textContent="Could not load advertisements: "+(error.message||"Unknown Supabase error");message.style.color="#b00020";console.error("PTC ads query failed:",error);return;}
   if(!ads||ads.length===0){message.textContent="No advertisements available right now.";return;}
   window.ptcAds=ads;
   const {data:views,error:viewError}=await supabaseClient.from("ptc_views").select("ad_id,claimed_at,started_at,cancelled_at").eq("user_id",session.user.id).order("claimed_at",{ascending:false,nullsFirst:false});
