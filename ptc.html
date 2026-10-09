@@ -41,11 +41,20 @@ async function loadAds(){
   const {data:views,error:viewError}=await supabaseClient.from("ptc_views").select("ad_id,claimed_at,viewed_at,started_at,cancelled_at").eq("user_id",session.user.id).order("claimed_at",{ascending:false,nullsFirst:false});
   if(viewError){adsContainer.innerHTML="";message.textContent="Could not verify your ad history. Please refresh the page or try again shortly; ads are hidden to avoid showing an incorrect Ready status.";message.style.color="#b00020";return;}
   const lastClaim={};
+  // Prefer the authoritative claim timestamp first. A user can have older,
+  // unclaimed/cancelled attempts for the same ad, so legacy fallback must never
+  // override a real claim or make a recently claimed ad look available.
   (views||[]).forEach(v=>{
-    // Current claims use claimed_at. Older successful claims predate that column;
-    // those legacy rows have viewed_at but no started_at.
-    const claimTime=v.claimed_at || (!v.started_at && !v.cancelled_at ? v.viewed_at : null);
-    if(claimTime && lastClaim[v.ad_id]===undefined)lastClaim[v.ad_id]=new Date(claimTime);
+    if(v.claimed_at){
+      const current=new Date(v.claimed_at);
+      if(!lastClaim[v.ad_id] || current>lastClaim[v.ad_id])lastClaim[v.ad_id]=current;
+    }
+  });
+  // Compatibility for old successful rows created before claimed_at existed.
+  (views||[]).forEach(v=>{
+    if(lastClaim[v.ad_id]===undefined && !v.started_at && !v.cancelled_at && v.viewed_at){
+      lastClaim[v.ad_id]=new Date(v.viewed_at);
+    }
   });
   message.textContent="";
   const uniqueAds=[];const seenAds=new Set();
