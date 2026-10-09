@@ -1,7 +1,7 @@
 /* Shared signed-in account header for every app page. */
 (() => {
   const card = document.querySelector(".auth-card");
-  if (!card || !window.supabaseClient) return;
+  if (!card || typeof supabaseClient === "undefined") return;
 
   const header = document.createElement("div");
   header.className = "account-topbar";
