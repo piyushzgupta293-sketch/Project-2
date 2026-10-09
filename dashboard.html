@@ -9,100 +9,49 @@
 <body>
 <main class="auth-page">
   <section class="auth-card">
-<nav class="site-menu" aria-label="Main navigation">
-  <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="siteMenuLinks" onclick="toggleSiteMenu()">☰ Menu</button>
-  <div class="site-menu-links" id="siteMenuLinks" hidden>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="faucet.html">Faucet</a>
-    <a href="ptc.html">PTC Ads</a>
-    <a href="transactions.html">Transactions</a>
-    <span class="menu-coming-soon">Withdrawals <small>Coming soon</small></span>
-    <span class="menu-coming-soon">Deposits <small>Coming soon</small></span>
-  </div>
-</nav>
     <div class="brand">Project-2</div>
     <h1>Dashboard</h1>
     <p class="subtitle">Welcome to your account</p>
 
-    <div>
-      <p><strong>Email</strong></p>
-      <p id="userEmail">Loading...</p>
-
-      <p><strong>Balance</strong></p>
-      <p id="balance">Loading...</p>
-
-      <p><strong>Today's Earnings</strong></p>
-      <p id="todayEarnings">Loading...</p>
-
-      <p><strong>Total Earnings</strong></p>
-      <p id="totalEarnings">Loading...</p>
-
-      <hr>
-
-      <button type="button" id="logoutButton">Logout</button>
-      <p class="message" id="message"></p>
+    <div class="earnings-grid">
+      <div class="earning-item"><p><strong>Today's Earnings</strong></p><p id="todayEarnings">Loading...</p></div>
+      <div class="earning-item"><p><strong>Total Earnings</strong></p><p id="totalEarnings">Loading...</p></div>
     </div>
+    <p class="message" id="message"></p>
   </section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
+<script src="header.js"></script>
 <script>
-const userEmail = document.getElementById("userEmail");
-const balance = document.getElementById("balance");
 const todayEarnings = document.getElementById("todayEarnings");
 const totalEarnings = document.getElementById("totalEarnings");
-const logoutButton = document.getElementById("logoutButton");
 const message = document.getElementById("message");
 
 async function loadDashboard() {
   const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
-
   if (sessionError || !sessionData.session) {
     window.location.href = "index.html";
     return;
   }
 
-  const user = sessionData.session.user;
-  userEmail.textContent = user.email || "User";
-
   const { data: profile, error: profileError } = await supabaseClient
     .from("profiles")
-    .select("balance, today_earnings, total_earnings")
-    .eq("id", user.id)
+    .select("today_earnings, total_earnings")
+    .eq("id", sessionData.session.user.id)
     .single();
 
   if (profileError) {
-    message.textContent = "Could not load your balance.";
+    message.textContent = "Could not load your earnings.";
     message.style.color = "#b00020";
-    balance.textContent = "—";
     todayEarnings.textContent = "—";
     totalEarnings.textContent = "—";
     return;
   }
-
-  balance.textContent = profile.balance ?? 0;
   todayEarnings.textContent = profile.today_earnings ?? 0;
   totalEarnings.textContent = profile.total_earnings ?? 0;
 }
-
-logoutButton.addEventListener("click", async () => {
-  logoutButton.disabled = true;
-  logoutButton.textContent = "Logging out...";
-
-  const { error } = await supabaseClient.auth.signOut();
-
-  if (error) {
-    message.textContent = error.message;
-    message.style.color = "#b00020";
-    logoutButton.disabled = false;
-    logoutButton.textContent = "Logout";
-    return;
-  }
-
-  window.location.href = "index.html";
-});
-
 loadDashboard();
 </script>
 <script>
