@@ -21,21 +21,6 @@
       <div class="hero-mark" aria-hidden="true">↗</div>
     </section>
 
-    <section class="earnings-grid dashboard-stats period-stats" aria-label="Earnings by time period">
-      <div class="earning-item stat-card"><span class="stat-icon">☀️</span><p><strong>Today's Earnings</strong></p><p id="todayEarnings">Loading...</p><span class="stat-caption">Earned since midnight</span></div>
-      <div class="earning-item stat-card"><span class="stat-icon">🌙</span><p><strong>Yesterday</strong></p><p id="yesterdayEarnings">Loading...</p><span class="stat-caption">Previous calendar day</span></div>
-      <div class="earning-item stat-card"><span class="stat-icon">📈</span><p><strong>All-time Earnings</strong></p><p id="totalEarnings">Loading...</p><span class="stat-caption">All recorded earnings</span></div>
-    </section>
-
-    <section class="source-earnings" aria-label="Today's earnings by source">
-      <div class="section-heading"><div><h2>Today's earnings by source</h2><p>See which earning method added your points today.</p></div></div>
-      <div class="source-earnings-grid">
-        <article class="source-earning-card"><span class="source-icon">🪙</span><span class="source-name">Faucet</span><strong id="todayFaucet">Loading...</strong><small>Points earned today</small></article>
-        <article class="source-earning-card"><span class="source-icon">▶️</span><span class="source-name">PTC Ads</span><strong id="todayPtc">Loading...</strong><small>Points earned today</small></article>
-        <article class="source-earning-card"><span class="source-icon">✨</span><span class="source-name">Other</span><strong id="todayOther">Loading...</strong><small>Other earning sources</small></article>
-      </div>
-    </section>
-
     <section class="earnings-chart-card"><h2>📉 Earnings history</h2><p>Compare today, yesterday, and your all-time earnings.</p><div id="earningsChart" class="earnings-chart"><p>Loading graph…</p></div></section>
     <div class="section-heading">
       <div><h2>Start earning</h2><p>Pick an earning method to continue.</p></div>
@@ -57,6 +42,21 @@
         <span class="method-arrow">→</span>
       </a>
     </section>
+    <section class="earnings-grid dashboard-stats period-stats" aria-label="Earnings by time period">
+      <div class="earning-item stat-card"><span class="stat-icon">☀️</span><p><strong>Today's Earnings</strong></p><p id="todayEarnings">Loading...</p><span class="stat-caption">Earned since midnight</span></div>
+      <div class="earning-item stat-card"><span class="stat-icon">🌙</span><p><strong>Yesterday</strong></p><p id="yesterdayEarnings">Loading...</p><span class="stat-caption">Previous calendar day</span></div>
+      <div class="earning-item stat-card"><span class="stat-icon">📈</span><p><strong>All-time Earnings</strong></p><p id="totalEarnings">Loading...</p><span class="stat-caption">All recorded earnings</span></div>
+    </section>
+
+    <section class="source-earnings" aria-label="Today's earnings by source">
+      <div class="section-heading"><div><h2>Today's earnings by source</h2><p>See which earning method added your points today.</p></div></div>
+      <div class="source-earnings-grid">
+        <article class="source-earning-card"><span class="source-icon">🪙</span><span class="source-name">Faucet</span><strong id="todayFaucet">Loading...</strong><small>Points earned today</small></article>
+        <article class="source-earning-card"><span class="source-icon">▶️</span><span class="source-name">PTC Ads</span><strong id="todayPtc">Loading...</strong><small>Points earned today</small></article>
+        <article class="source-earning-card"><span class="source-icon">✨</span><span class="source-name">Other</span><strong id="todayOther">Loading...</strong><small>Other earning sources</small></article>
+      </div>
+    </section>
+
     <p class="message" id="message"></p>
   </section>
 </main>
@@ -139,7 +139,12 @@ async function loadDashboard() {
   document.getElementById("todayFaucet").textContent = formatPoints(totals.faucet);
   document.getElementById("todayPtc").textContent = formatPoints(totals.ptc);
   document.getElementById("todayOther").textContent = formatPoints(totals.other);
-  window.renderEarningsChart(totals.today, totals.yesterday, totals.all);
+  if (typeof window.renderEarningsChart === "function") {
+    window.renderEarningsChart(totals.today, totals.yesterday, totals.all);
+  } else {
+    const chart = document.getElementById("earningsChart");
+    chart.innerHTML = "<p>Graph is loading. Please refresh this page once.</p>";
+  }
 }
 loadDashboard();
 </script>
