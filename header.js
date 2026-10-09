@@ -11,7 +11,22 @@
       <strong id="topBalanceValue">Loading…</strong>
     </div>
     <div class="topbar-actions">
-      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to light theme" title="Switch theme">☀️</button>
+      <div class="theme-wrap">
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Choose theme" title="Choose theme" aria-expanded="false">🎨</button>
+        <div class="theme-dropdown" id="themeDropdown" hidden>
+          <div class="theme-dropdown-title">Choose your theme</div>
+          <div class="theme-group-label">Light themes</div>
+          <button type="button" class="theme-choice" data-theme-choice="light-blue"><span class="theme-dot dot-blue"></span>Light + Blue</button>
+          <button type="button" class="theme-choice" data-theme-choice="light-red"><span class="theme-dot dot-red"></span>Light + Red</button>
+          <button type="button" class="theme-choice" data-theme-choice="light-yellow"><span class="theme-dot dot-yellow"></span>Light + Yellow</button>
+          <button type="button" class="theme-choice" data-theme-choice="light-green"><span class="theme-dot dot-green"></span>Light + Green</button>
+          <div class="theme-group-label">Black themes</div>
+          <button type="button" class="theme-choice" data-theme-choice="dark-blue"><span class="theme-dot dot-blue"></span>Black + Blue</button>
+          <button type="button" class="theme-choice" data-theme-choice="dark-red"><span class="theme-dot dot-red"></span>Black + Red</button>
+          <button type="button" class="theme-choice" data-theme-choice="dark-yellow"><span class="theme-dot dot-yellow"></span>Black + Yellow</button>
+          <button type="button" class="theme-choice" data-theme-choice="dark-green"><span class="theme-dot dot-green"></span>Black + Green</button>
+        </div>
+      </div>
       <div class="profile-wrap">
       <button type="button" class="profile-circle" id="profileButton" aria-label="Open profile menu" aria-expanded="false">👤</button>
       <div class="profile-dropdown" id="profileDropdown" hidden>
@@ -66,20 +81,36 @@
   const logoutButton = header.querySelector("#profileLogout");
   const errorNode = header.querySelector("#profileError");
   const themeButton = header.querySelector("#themeToggle");
+  const themeDropdown = header.querySelector("#themeDropdown");
   function syncThemeButton() {
-    const light = document.documentElement.dataset.theme === "light";
-    themeButton.textContent = light ? "🌙" : "☀️";
-    themeButton.setAttribute("aria-label", light ? "Switch to dark theme" : "Switch to light theme");
-    themeButton.title = light ? "Switch to dark theme" : "Switch to light theme";
+    themeButton.textContent = "🎨";
+    themeButton.setAttribute("aria-label", "Choose theme");
+    themeButton.title = "Choose theme";
+    themeButton.setAttribute("aria-expanded", String(!themeDropdown.hidden));
+    themeDropdown.querySelectorAll("[data-theme-choice]").forEach(option => {
+      option.classList.toggle("selected", option.dataset.themeChoice === document.documentElement.dataset.theme);
+    });
   }
   syncThemeButton();
-  themeButton.addEventListener("click", () => {
-    if (typeof window.applySiteTheme === "function") {
-      const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
-      window.applySiteTheme(next);
+  themeButton.addEventListener("click", event => {
+    event.stopPropagation();
+    themeDropdown.hidden = !themeDropdown.hidden;
+    syncThemeButton();
+  });
+  themeDropdown.querySelectorAll("[data-theme-choice]").forEach(option => {
+    option.addEventListener("click", () => {
+      if (typeof window.applySiteTheme === "function") window.applySiteTheme(option.dataset.themeChoice);
+      themeDropdown.hidden = true;
+      syncThemeButton();
+    });
+  });
+  document.addEventListener("click", event => {
+    if (!header.querySelector(".theme-wrap").contains(event.target)) {
+      themeDropdown.hidden = true;
       syncThemeButton();
     }
   });
+  document.addEventListener("site-theme-change", syncThemeButton);
 
   function closeProfile() {
     dropdown.hidden = true;
