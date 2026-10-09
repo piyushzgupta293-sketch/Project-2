@@ -34,6 +34,12 @@
     </div>`;
   card.insertBefore(nav, card.firstChild);
   card.insertBefore(header, nav);
+  const pageContent = document.createElement("div");
+  pageContent.className = "page-content";
+  Array.from(card.children).forEach(child => {
+    if (child !== header && child !== nav) pageContent.appendChild(child);
+  });
+  card.appendChild(pageContent);
   const menuButton = nav.querySelector(".menu-toggle");
   const menuLinks = nav.querySelector("#siteMenuLinks");
   menuButton.addEventListener("click", () => {
