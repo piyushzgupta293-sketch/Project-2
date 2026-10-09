@@ -1,0 +1,79 @@
+
+:root{--platform-blue:#2463eb;--platform-blue-dark:#194ac0;--platform-ink:#17243b;--platform-muted:#73819a;--platform-line:#e3eaf5;--platform-bg:#f4f7fc}
+body{background:var(--platform-bg);background-image:radial-gradient(ellipse at 78% 0%,rgba(64,128,255,.10),transparent 34%);color:var(--platform-ink)}
+.auth-page{display:block;width:100%;max-width:none;min-height:100vh;padding:18px}
+.auth-card:not(:has(#authForm)){display:grid;grid-template-columns:224px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"sidebar topbar" "sidebar content";gap:0 24px;width:100%;max-width:1280px;min-height:calc(100vh - 36px);margin:0 auto;padding:22px;overflow:visible;border:1px solid #e1e8f3;border-radius:23px;background:#fff;box-shadow:0 18px 55px rgba(28,55,100,.07)}
+.auth-card:not(:has(#authForm)) .account-topbar{grid-area:topbar;align-self:start;min-height:76px;margin:0 0 18px;padding:13px 17px;border:1px solid #e4ebf5;border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(34,64,110,.035)}
+.auth-card:not(:has(#authForm)) .site-menu{grid-area:sidebar;align-self:stretch;position:relative;margin:0;padding:15px 12px;border:1px solid #e6edf7;border-radius:18px;background:linear-gradient(180deg,#f8fbff,#f3f7ff)}
+.auth-card:not(:has(#authForm)) .site-menu:before{content:"PROJECT-2";display:block;margin:2px 8px 24px;color:#2463eb;font-size:19px;font-weight:900;letter-spacing:-.65px}
+.auth-card:not(:has(#authForm)) .menu-toggle{display:none}
+.auth-card:not(:has(#authForm)) .site-menu-links,.auth-card:not(:has(#authForm)) .site-menu-links[hidden]{display:flex!important;flex-direction:column;gap:6px;margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+.auth-card:not(:has(#authForm)) .site-menu-links a,.auth-card:not(:has(#authForm)) .menu-coming-soon{min-height:46px;padding:12px 13px 12px 40px;border:1px solid transparent;border-radius:12px;font-size:13px}
+.auth-card:not(:has(#authForm)) .site-menu-links a:hover{background:#eaf1ff;border-color:#dce7ff}
+.auth-card:not(:has(#authForm)) .site-menu-links a[href*="dashboard"]:before{content:"⌂"}
+.auth-card:not(:has(#authForm)) .site-menu-links a[href*="faucet"]:before{content:"◉"}
+.auth-card:not(:has(#authForm)) .site-menu-links a[href*="ptc"]:before{content:"▶"}
+.auth-card:not(:has(#authForm)) .site-menu-links a[href*="transactions"]:before{content:"↔"}
+.auth-card:not(:has(#authForm)) .page-content{grid-area:content;min-width:0;padding:8px 2px 18px}
+.auth-card:not(:has(#authForm)) .brand{display:none}
+.auth-card:not(:has(#authForm)) h1{font-size:clamp(26px,3vw,34px);letter-spacing:-1px}
+.auth-card:not(:has(#authForm)) .subtitle{max-width:65ch}
+.top-balance-label{font-size:10px;letter-spacing:.7px}
+.top-balance strong{font-size:21px}
+.profile-circle{width:46px;height:46px;border:0;background:#eaf1ff;box-shadow:inset 0 0 0 1px #d8e5ff}
+.profile-dropdown{top:calc(100% + 12px)}
+.dashboard-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:4px 0 22px;padding:26px 28px;border:1px solid #dce8ff;border-radius:20px;background:linear-gradient(115deg,#edf4ff 0%,#f7faff 55%,#fff 100%)}
+.dashboard-hero .eyebrow{display:inline-block;margin-bottom:10px;color:#4776c8;font-size:10px;font-weight:900;letter-spacing:1.25px}
+.dashboard-hero h1{margin:0 0 8px}
+.dashboard-hero .subtitle{margin:0;max-width:520px}
+.hero-mark{display:flex;align-items:center;justify-content:center;flex:0 0 68px;width:68px;height:68px;border-radius:22px;background:#2463eb;color:#fff;font-size:40px;font-weight:400;box-shadow:0 12px 25px rgba(36,99,235,.2)}
+.dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0 0 30px}
+.dashboard-stats .earning-item{position:relative;min-height:160px;padding:20px;border:1px solid #e3eaf5;border-radius:17px;background:#fff;box-shadow:0 5px 18px rgba(34,64,110,.035)}
+.dashboard-stats .earning-item p:first-of-type{margin:12px 0 7px;font-size:13px;color:#687a96}
+.dashboard-stats .earning-item p:last-of-type{font-size:28px;line-height:1.25;letter-spacing:-.8px;color:#1c3f7d}
+.dashboard-stats .stat-icon{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;background:#edf3ff;color:#2463eb;font-size:19px;font-weight:800}
+.stat-caption{display:block;margin-top:7px;color:#91a0b6;font-size:11px}
+.section-heading{display:flex;justify-content:space-between;align-items:end;margin:0 0 13px}
+.section-heading h2{margin:0 0 4px;font-size:19px;letter-spacing:-.35px}
+.section-heading p{margin:0;font-size:13px;color:#8390a5}
+.earning-methods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.method-card{display:flex;align-items:center;gap:12px;min-width:0;min-height:118px;padding:17px;border:1px solid #e2eaf5;border-radius:16px;background:#fff;color:inherit;text-decoration:none;box-shadow:0 4px 14px rgba(34,64,110,.025);transition:transform .16s,border-color .16s,box-shadow .16s}
+.method-card:hover{transform:translateY(-2px);border-color:#bfd3ff;box-shadow:0 10px 24px rgba(36,99,235,.08)}
+.method-icon{display:flex;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;border-radius:13px;background:#edf3ff;color:#2463eb;font-size:20px;font-weight:900}
+.method-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
+.method-copy strong{color:#203a62;font-size:14px}
+.method-copy small{color:#8491a6;font-size:11px;line-height:1.45}
+.method-arrow{margin-left:auto;color:#8ca9e8;font-size:20px}
+.auth-card:not(:has(#authForm)) .faucet-hero{text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:18px;align-items:center;margin:22px 0 16px;padding:24px;border:1px solid #dce8ff!important;border-radius:19px!important;background:linear-gradient(120deg,#f0f5ff,#fff)!important}
+.auth-card:not(:has(#authForm)) .faucet-hero .coin{grid-row:1/span 3;margin:0;font-size:48px}
+.auth-card:not(:has(#authForm)) .faucet-hero .reward{font-size:35px;margin:3px 0 7px}
+.auth-card:not(:has(#authForm)) .faucet-button,.auth-card:not(:has(#authForm)) .faucet-cooldown{max-width:360px}
+.auth-card:not(:has(#authForm)) .ptc-list{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+.auth-card:not(:has(#authForm)) .ad-card{padding:19px!important}
+.auth-card:not(:has(#authForm)) .transaction-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+.auth-card:not(:has(#authForm)) .message{text-align:left}
+@media(max-width:850px){
+.auth-page{padding:10px}
+.auth-card:not(:has(#authForm)){grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"topbar" "sidebar" "content";gap:0;min-height:calc(100vh - 20px);padding:13px;border-radius:18px}
+.auth-card:not(:has(#authForm)) .site-menu{padding:0;border:0;background:transparent;margin:0 0 16px}
+.auth-card:not(:has(#authForm)) .site-menu:before{display:none}
+.auth-card:not(:has(#authForm)) .menu-toggle{display:flex;width:100%;min-height:44px;justify-content:flex-start;padding:11px 13px;border:1px solid #dce7f7;border-radius:12px;background:#f5f8ff}
+.auth-card:not(:has(#authForm)) .site-menu-links,.auth-card:not(:has(#authForm)) .site-menu-links[hidden]{display:none!important;margin-top:8px;padding:8px;border:1px solid #dce7f7;border-radius:14px;background:#fff;box-shadow:0 12px 30px rgba(25,59,105,.12)}
+.auth-card:not(:has(#authForm)) .site-menu-links:not([hidden]){display:flex!important}
+.auth-card:not(:has(#authForm)) .page-content{padding:3px 1px 12px}
+.earning-methods{grid-template-columns:1fr}
+.method-card{min-height:85px}
+.auth-card:not(:has(#authForm)) .ptc-list,.auth-card:not(:has(#authForm)) .transaction-list{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+.account-topbar{padding:10px 12px}
+.top-balance strong{font-size:18px}
+.dashboard-hero{padding:20px;align-items:flex-start}
+.hero-mark{flex-basis:48px;width:48px;height:48px;border-radius:15px;font-size:30px}
+.dashboard-stats{grid-template-columns:1fr;gap:11px}
+.dashboard-stats .earning-item{min-height:135px;padding:16px}
+.dashboard-stats .earning-item p:last-of-type{font-size:25px}
+.section-heading h2{font-size:18px}
+.auth-card:not(:has(#authForm)) .faucet-hero{grid-template-columns:1fr;padding:18px}
+.auth-card:not(:has(#authForm)) .faucet-hero .coin{grid-row:auto;margin-bottom:10px}
+}
