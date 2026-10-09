@@ -54,26 +54,5 @@ async function loadDashboard() {
 }
 loadDashboard();
 </script>
-<script>
-function toggleSiteMenu(){
-  const button=document.querySelector(".menu-toggle");
-  const links=document.getElementById("siteMenuLinks");
-  if(!button||!links)return;
-  const opening=links.hidden;
-  links.hidden=!opening;
-  button.setAttribute("aria-expanded",String(opening));
-  button.textContent=opening?"✕ Close Menu":"☰ Menu";
-}
-document.addEventListener("click",function(event){
-  const menu=document.querySelector(".site-menu");
-  const button=document.querySelector(".menu-toggle");
-  const links=document.getElementById("siteMenuLinks");
-  if(menu&&button&&links&&!menu.contains(event.target)){
-    links.hidden=true;
-    button.setAttribute("aria-expanded","false");
-    button.textContent="☰ Menu";
-  }
-});
-</script>
 </body>
 </html>
