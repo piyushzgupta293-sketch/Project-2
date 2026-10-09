@@ -135,7 +135,11 @@ document.addEventListener("visibilitychange",async()=>{
     }
   }
 });
-loadAds();
+loadAds().catch(error=>{
+  console.error("PTC page initialization failed:",error);
+  message.textContent="PTC page error: "+(error&&error.message?error.message:String(error));
+  message.style.color="#b00020";
+});
 </script>
 </body>
 </html>
