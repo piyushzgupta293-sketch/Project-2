@@ -39,8 +39,8 @@ async function loadAds(){
     const last=lastClaim[ad.id];
     const cooldownMs=Number(ad.cooldown_hours||24)*60*60*1000;
     const available=!last||Date.now()-last.getTime()>=cooldownMs;
-    const initialTimer=available?"Ready":"Already watched";
-    const buttonText=available?"View Ad":"✓ Watched";
+    const initialTimer=available?"Ready":"✓ Already Watched";
+    const buttonText=available?"View Ad":"Already Watched";
     return `<article class="ad-card" id="card-${ad.id}"><h2>${index+1}. ${escapeHtml(ad.title)}</h2><p>${escapeHtml(ad.description||"")}</p><div class="ad-meta"><span>Reward: <strong>${ad.reward}</strong></span><span>Time: <strong>${ad.duration_seconds}s</strong></span></div><div class="timer" id="timer-${ad.id}">${initialTimer}</div><div class="cooldown" id="cooldown-${ad.id}">${available?"":"✓ Already watched — available again soon..."}</div><button class="ad-button ${available?"":"watched"}" id="button-${ad.id}" ${available?"":"disabled"} onclick="startAd(${ad.id})">${buttonText}</button></article>`;
   }).join("");
   uniqueAds.forEach(ad=>{if(lastClaim[ad.id])startCooldownClock(ad,lastClaim[ad.id]);});
@@ -114,7 +114,7 @@ async function claimReward(id){
   button.disabled=true;button.textContent="Claiming...";
   const {data,error}=await supabaseClient.rpc("claim_ptc_reward",{p_ad_id:id});
   if(error){button.disabled=false;button.textContent="Claim Reward";message.textContent=error.message||"Could not claim reward.";message.style.color="#b00020";return;}
-  delete activeTimers[id];timer.textContent="✓ Already watched";button.textContent="✓ Watched";button.classList.add("watched");button.disabled=true;button.onclick=null;
+  delete activeTimers[id];timer.textContent="✓ Already Watched";button.textContent="Already Watched";button.classList.add("watched");button.disabled=true;button.onclick=null;
   message.textContent="Your reward was added to your balance. Refreshing ad status...";message.style.color="#111";
   await loadAds();
   message.textContent="Your reward was added to your balance.";message.style.color="#111";
